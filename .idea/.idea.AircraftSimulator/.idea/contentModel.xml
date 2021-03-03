@@ -25,30 +25,36 @@
           </e>
         </e>
         <e p="Scripts" t="Include">
-          <e p="AerodynamicSurface.cs" t="Include" />
-          <e p="AerodynamicSurfaceManager.cs" t="Include" />
-          <e p="AirplaneController.cs" t="Include" />
-          <e p="Editor" t="Include">
-            <e p="AeroSurfaceConfigDrawer.cs" t="Include" />
-            <e p="AeroSurfaceConfigEditor.cs" t="Include" />
-            <e p="AeroSurfaceEditor.cs" t="Include" />
-            <e p="AircraftGizmos.cs" t="Include" />
-            <e p="AircraftPhysicsDisplaySettings.cs" t="Include" />
+          <e p="AerodynamicS" t="Include">
+            <e p="CoreScripts" t="Include">
+              <e p="AerodynamicSurface.cs" t="Include" />
+              <e p="AerodynamicSurfaceManager.cs" t="Include" />
+              <e p="AirplaneController.cs" t="Include" />
+              <e p="PhysicsManager.cs" t="Include" />
+              <e p="PowerTorqueVector3.cs" t="Include" />
+            </e>
+            <e p="Editor" t="Include">
+              <e p="AeroSurfaceConfigDrawer.cs" t="Include" />
+              <e p="AeroSurfaceConfigEditor.cs" t="Include" />
+              <e p="AeroSurfaceEditor.cs" t="Include" />
+              <e p="AircraftGizmos.cs" t="Include" />
+              <e p="AircraftPhysicsDisplaySettings.cs" t="Include" />
+            </e>
           </e>
-          <e p="PhysicsManager.cs" t="Include" />
-          <e p="PowerTorqueVector3.cs" t="Include" />
           <e p="TerrainGenerators" t="Include">
             <e p="DataStorage" t="Include">
               <e p="DataUpdater.cs" t="Include" />
               <e p="DataUpdaterEditor.cs" t="Include" />
-              <e p="NoiseData.cs" t="Include" />
-              <e p="TerrainData.cs" t="Include" />
+              <e p="HeightMapSettings.cs" t="Include" />
+              <e p="MeshSettings.cs" t="Include" />
               <e p="TextureData.cs" t="Include" />
             </e>
+            <e p="Enums.cs" t="Include" />
             <e p="FalloffGenerator.cs" t="Include" />
+            <e p="Generator.cs" t="Include" />
+            <e p="HeightMapGenerator.cs" t="Include" />
             <e p="InfinityGenerator.cs" t="Include" />
             <e p="MapDisplayer.cs" t="Include" />
-            <e p="NoiseGenerator.cs" t="Include" />
             <e p="ProceduralTerrainGenerator.cs" t="Include" />
             <e p="ProceduralTerrainGeneratorEditor.cs" t="Include" />
           </e>

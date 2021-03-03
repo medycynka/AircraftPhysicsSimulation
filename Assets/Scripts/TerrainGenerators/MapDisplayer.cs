@@ -17,6 +17,6 @@ public class MapDisplayer : MonoBehaviour
     public void DrawMesh(MeshData meshData)
     {
         meshFilter.mesh = meshData.GenerateMesh();
-        meshFilter.transform.localScale = Vector3.one * FindObjectOfType<ProceduralTerrainGenerator>().terrainData.uniformScale;
+        meshFilter.transform.localScale = Vector3.one * FindObjectOfType<ProceduralTerrainGenerator>().meshSettings.meshScale;
     }
 }

@@ -22,7 +22,7 @@ public class InfinityGenerator : MonoBehaviour
 	private static ProceduralTerrainGenerator _mapGenerator;
 	
 	private Vector2 _viewerPositionOld;
-	private int _chunkSize;
+	private float _meshWorldSize;
 	private int _chunksVisibleInViewDst;
 	private Dictionary<Vector2, TerrainChunk> _terrainChunkDictionary = new Dictionary<Vector2, TerrainChunk>();
 	private static List<TerrainChunk> _visibleTerrainChunks = new List<TerrainChunk>();
@@ -32,15 +32,15 @@ public class InfinityGenerator : MonoBehaviour
 		_mapGenerator = FindObjectOfType<ProceduralTerrainGenerator> ();
 
 		maxViewDst = detailLevels[detailLevels.Length - 1].visibleDstThreshold;
-		_chunkSize = _mapGenerator.mapChunkSize - 1;
-		_chunksVisibleInViewDst = Mathf.RoundToInt(maxViewDst / _chunkSize);
+		_meshWorldSize = _mapGenerator.meshSettings.meshWorldSize;
+		_chunksVisibleInViewDst = Mathf.RoundToInt(maxViewDst / _meshWorldSize);
 
 		UpdateVisibleChunks ();
 	}
 
 	private void Update()
 	{
-		viewerPosition = new Vector2 (viewer.position.x, viewer.position.z) / _mapGenerator.terrainData.uniformScale;
+		viewerPosition = new Vector2(viewer.position.x, viewer.position.z);
 
 		if (viewerPosition != _viewerPositionOld)
 		{
@@ -67,8 +67,8 @@ public class InfinityGenerator : MonoBehaviour
 			_visibleTerrainChunks[i].UpdateTerrainChunk();
 		}
 			
-		int currentChunkCoordX = Mathf.RoundToInt (viewerPosition.x / _chunkSize);
-		int currentChunkCoordY = Mathf.RoundToInt (viewerPosition.y / _chunkSize);
+		int currentChunkCoordX = Mathf.RoundToInt (viewerPosition.x / _meshWorldSize);
+		int currentChunkCoordY = Mathf.RoundToInt (viewerPosition.y / _meshWorldSize);
 
 		for (int yOffset = -_chunksVisibleInViewDst; yOffset <= _chunksVisibleInViewDst; yOffset++) 
 		{
@@ -85,7 +85,7 @@ public class InfinityGenerator : MonoBehaviour
 					else
 					{
 						_terrainChunkDictionary.Add(viewedChunkCoord,
-							new TerrainChunk(viewedChunkCoord, _chunkSize, detailLevels, colliderLODId, transform,
+							new TerrainChunk(viewedChunkCoord, _meshWorldSize, detailLevels, colliderLODId, transform,
 								mapMaterial));
 					}
 				}
@@ -98,7 +98,7 @@ public class InfinityGenerator : MonoBehaviour
 		public Vector2 coord;
 		
 		private GameObject _meshObject;
-		private Vector2 _position;
+		private Vector2 _sampleCenter;
 		private Bounds _bounds;
 
 		private MeshRenderer _meshRenderer;
@@ -109,20 +109,20 @@ public class InfinityGenerator : MonoBehaviour
 		private LODMesh[] _lodMeshes;
 		private int _colliderLODId;
 
-		private MapData _mapData;
+		private HeightMap _heightMap;
 		private bool _mapDataReceived;
 		private int _previousLODIndex = -1;
 		private bool _hasSetCollider;
 
-		public TerrainChunk(Vector2 coord, int size, LODInfo[] detailLevels, int colliderLODId, Transform parent, Material material)
+		public TerrainChunk(Vector2 coord, float meshWorlSize, LODInfo[] detailLevels, int colliderLODId, Transform parent, Material material)
 		{
 			this.coord = coord;
 			_detailLevels = detailLevels;
 			_colliderLODId = colliderLODId;
 
-				_position = coord * size;
-			_bounds = new Bounds(_position,Vector2.one * size);
-			Vector3 positionV3 = new Vector3(_position.x,0,_position.y);
+			_sampleCenter = coord * meshWorlSize / _mapGenerator.meshSettings.meshScale;
+			Vector2 position = coord * meshWorlSize;
+			_bounds = new Bounds(position,Vector2.one * meshWorlSize);
 
 			_meshObject = new GameObject("Terrain Chunk");
 			_meshRenderer = _meshObject.AddComponent<MeshRenderer>();
@@ -130,9 +130,8 @@ public class InfinityGenerator : MonoBehaviour
 			_meshRenderer.material = material;
 			_meshCollider = _meshObject.AddComponent<MeshCollider>();
 
-			_meshObject.transform.position = positionV3 * _mapGenerator.terrainData.uniformScale;
+			_meshObject.transform.position = new Vector3(position.x, 0, position.y);
 			_meshObject.transform.parent = parent;
-			_meshObject.transform.localScale = Vector3.one * _mapGenerator.terrainData.uniformScale;
 			SetVisible(false);
 
 			_lodMeshes = new LODMesh[detailLevels.Length];
@@ -148,12 +147,12 @@ public class InfinityGenerator : MonoBehaviour
 				}
 			}
 
-			_mapGenerator.RequestMapData(_position, OnMapDataReceived);
+			_mapGenerator.RequestHeightMap(_sampleCenter, OnMapDataReceived);
 		}
 
-		private void OnMapDataReceived(MapData mapData) 
+		private void OnMapDataReceived(HeightMap heightMap) 
 		{
-			_mapData = mapData;
+			_heightMap = heightMap;
 			_mapDataReceived = true;
 
 			UpdateTerrainChunk ();
@@ -194,7 +193,7 @@ public class InfinityGenerator : MonoBehaviour
 						} 
 						else if (!lodMesh.hasRequestedMesh) 
 						{
-							lodMesh.RequestMesh(_mapData);
+							lodMesh.RequestMesh(_heightMap);
 						}
 					}
 				}
@@ -225,7 +224,7 @@ public class InfinityGenerator : MonoBehaviour
 				{
 					if (!_lodMeshes[_colliderLODId].hasRequestedMesh)
 					{
-						_lodMeshes[_colliderLODId].RequestMesh(_mapData);
+						_lodMeshes[_colliderLODId].RequestMesh(_heightMap);
 					}
 				}
 
@@ -273,17 +272,17 @@ public class InfinityGenerator : MonoBehaviour
 			updateCallback();
 		}
 
-		public void RequestMesh(MapData mapData) 
+		public void RequestMesh(HeightMap heightMap) 
 		{
 			hasRequestedMesh = true;
-			_mapGenerator.RequestMeshData(mapData, _lod, OnMeshDataReceived);
+			_mapGenerator.RequestMeshData(heightMap, _lod, OnMeshDataReceived);
 		}
 	}
 
 	[Serializable]
 	public struct LODInfo 
 	{
-		[Range(0, NoiseGenerator.NumSupportedLODs - 1)]
+		[Range(0, MeshSettings.NumSupportedLODs - 1)]
 		public int lod;
 		public float visibleDstThreshold;
 
