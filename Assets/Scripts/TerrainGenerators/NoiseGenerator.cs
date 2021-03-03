@@ -1,14 +1,20 @@
 using UnityEngine;
 
-public static class NoiceGenerator
+public static class NoiseGenerator
 {
+    public const int NumSupportedLODs = 5;
+    public const int NumSupportedChunkSizes = 9;
+    public const int NumSupportedFlatShadedChunkSizes = 3;
+    public static readonly int[] SupportedChunkSizes = { 48, 72, 96 ,120, 144, 168, 192, 216, 240 };
+    public static readonly int[] SupportedFlatShadedChunkSizes = { 48, 72, 96 };
+    
     public enum NormalizeMode
     {
         Local, 
         Global
     }
     
-    public static float[,] GenerateNoiceMap(int mapWidth, int mapHeight, int seed, float scale, int octaves, 
+    public static float[,] GenerateNoiseMap(int mapWidth, int mapHeight, int seed, float scale, int octaves, 
         float persistence, float lacunarity, Vector2 offset, NormalizeMode normalizeMode)
     {
         float[,] noiseMap = new float[mapWidth,mapHeight];
@@ -136,7 +142,12 @@ public static class NoiceGenerator
         int verticesPerLine = (meshSize - 1) / meshSimplificationIncrement + 1;
         MeshData meshData = new MeshData(verticesPerLine, useFlatShading);
 
-        int[,] vertexIndicesMap = new int[borderedSize, borderedSize];
+        int[][] vertexIndicesMap = new int[borderedSize][];
+        for (int index = 0; index < borderedSize; index++)
+        {
+            vertexIndicesMap[index] = new int[borderedSize];
+        }
+
         int meshVertexId = 0;
         int borderVertexId = -1;
 
@@ -146,12 +157,12 @@ public static class NoiceGenerator
             {
                 if (y == 0 || y == borderedSize - 1 || x == 0 || x == borderedSize - 1)
                 {
-                    vertexIndicesMap[x, y] = borderVertexId;
+                    vertexIndicesMap[x][y] = borderVertexId;
                     borderVertexId--;
                 }
                 else
                 {
-                    vertexIndicesMap[x, y] = meshVertexId;
+                    vertexIndicesMap[x][y] = meshVertexId;
                     meshVertexId++;
                 }
             }
@@ -162,7 +173,7 @@ public static class NoiceGenerator
         {
             for (int x = 0; x < borderedSize; x += meshSimplificationIncrement)
             {
-                int vertexIndex = vertexIndicesMap[x, y];
+                int vertexIndex = vertexIndicesMap[x][y];
                 Vector2 percent = new Vector2((x - meshSimplificationIncrement) / (float) meshSize,
                     (y - meshSimplificationIncrement) / (float) meshSize);
                 float height = curve.Evaluate(heightMap[x, y]) * heightMultiplier;
@@ -173,15 +184,13 @@ public static class NoiceGenerator
                 
                 if (x < borderedSize - 1 && y < borderedSize - 1)
                 {
-                    int a = vertexIndicesMap[x, y];
-                    int b = vertexIndicesMap[x + meshSimplificationIncrement, y];
-                    int c = vertexIndicesMap[x, y + meshSimplificationIncrement];
-                    int d = vertexIndicesMap[x + meshSimplificationIncrement, y + meshSimplificationIncrement];
+                    int a = vertexIndicesMap[x][y];
+                    int b = vertexIndicesMap[x + meshSimplificationIncrement][y];
+                    int c = vertexIndicesMap[x][y + meshSimplificationIncrement];
+                    int d = vertexIndicesMap[x + meshSimplificationIncrement][y + meshSimplificationIncrement];
                     meshData.AddTriangle(a, d, c);
                     meshData.AddTriangle(d, a, b);
                 }
-                
-                //vertexIndex++;
             }
         }
         

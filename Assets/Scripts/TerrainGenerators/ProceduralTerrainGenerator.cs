@@ -2,26 +2,50 @@ using System;
 using System.Threading;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Experimental.TerrainAPI;
 
 
 public class ProceduralTerrainGenerator : MonoBehaviour
 {
     public enum DrawMode
     {
-        NoiceMap,
+        NoiseMap,
         Mesh,
         Falloff
     }
 
-    public NoiceData noiceData;
+    public enum ChunkSize
+    {
+        _48x48,
+        _72x72,
+        _96x96,
+        _120x120,
+        _144x144,
+        _168x168,
+        _192x192,
+        _216x216,
+        _240x240
+    }
+
+    public enum FlatShadedChunkSize
+    {
+        _48x48,
+        _72x72,
+        _96x96
+    }
+
+    public NoiseData noiseData;
     public TerrainData terrainData;
     public TextureData textureData;
 
     public Material terrainMaterial;
     
     public MapDisplayer mapDisplayer;
-    [Range(0, 6)] public int editorLOD;
+    [Range(0, NoiseGenerator.NumSupportedLODs - 1)] public int editorLOD;
+    
     public DrawMode drawMode;
+    public ChunkSize chunkSize = ChunkSize._240x240;
+    public FlatShadedChunkSize flatShadedChunkSize = FlatShadedChunkSize._96x96;
 
     private float[,] falloffMap;
     private Queue<MapThreadInfo<MapData>> _mapDataThreadQueue = new Queue<MapThreadInfo<MapData>>();
@@ -33,10 +57,10 @@ public class ProceduralTerrainGenerator : MonoBehaviour
         {
             if (terrainData.useFlattShading)
             {
-                return 95;
+                return NoiseGenerator.SupportedFlatShadedChunkSizes[(int)flatShadedChunkSize] - 1;
             }
 
-            return 239;
+            return NoiseGenerator.SupportedChunkSizes[(int) chunkSize] - 1;
         }
     }
 
@@ -69,10 +93,10 @@ public class ProceduralTerrainGenerator : MonoBehaviour
             terrainData.ONValuesUpdated += OnValuesUpdated;
         }
         
-        if (noiceData != null)
+        if (noiseData != null)
         {
-            noiceData.ONValuesUpdated -= OnValuesUpdated;
-            noiceData.ONValuesUpdated += OnValuesUpdated;
+            noiseData.ONValuesUpdated -= OnValuesUpdated;
+            noiseData.ONValuesUpdated += OnValuesUpdated;
         }
         
         if (textureData != null)
@@ -101,16 +125,17 @@ public class ProceduralTerrainGenerator : MonoBehaviour
         
         switch (drawMode)
         {
-            case DrawMode.NoiceMap:
-                mapDisplayer.DrawTexture(NoiceGenerator.TextureFromHeightMap(mapData.heightMap));
+            case DrawMode.NoiseMap:
+                mapDisplayer.DrawTexture(NoiseGenerator.TextureFromHeightMap(mapData.heightMap));
                 break;
             case DrawMode.Mesh:
                 mapDisplayer.DrawMesh(
-                    NoiceGenerator.GenerateMeshTerrain(mapData.heightMap, terrainData.meshHeightMultiplier,
+                    NoiseGenerator.GenerateMeshTerrain(mapData.heightMap, terrainData.meshHeightMultiplier,
                         terrainData.meshHeightCurve, editorLOD, terrainData.useFlattShading));
                 break;
             case DrawMode.Falloff:
-                mapDisplayer.DrawTexture(NoiceGenerator.TextureFromHeightMap(FalloffGenerator.GenerateFalloffMap(mapChunkSize)));
+                mapDisplayer.DrawTexture(
+                    NoiseGenerator.TextureFromHeightMap(FalloffGenerator.GenerateFalloffMap(mapChunkSize)));
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
@@ -149,7 +174,7 @@ public class ProceduralTerrainGenerator : MonoBehaviour
     private void MeshDataThread(MapData mapData, int lod, Action<MeshData> callback)
     {
         MeshData meshData =
-            NoiceGenerator.GenerateMeshTerrain(mapData.heightMap, terrainData.meshHeightMultiplier,
+            NoiseGenerator.GenerateMeshTerrain(mapData.heightMap, terrainData.meshHeightMultiplier,
                 terrainData.meshHeightCurve, lod, terrainData.useFlattShading);
         lock (_meshDataThreadQueue)
         {
@@ -159,9 +184,9 @@ public class ProceduralTerrainGenerator : MonoBehaviour
    
     private MapData GenerateMapData(Vector2 centre)
     {
-        float[,] noiceMap = NoiceGenerator.GenerateNoiceMap(mapChunkSize + 2, mapChunkSize + 2, 
-            noiceData.seed, noiceData.perlinNoiseScale, noiceData.octaves, noiceData.persistence, noiceData.lacunarity,
-            centre + noiceData.offset, noiceData.normalizeMode);
+        float[,] noiseMap = NoiseGenerator.GenerateNoiseMap(mapChunkSize + 2, mapChunkSize + 2, 
+            noiseData.seed, noiseData.perlinNoiseScale, noiseData.octaves, noiseData.persistence, noiseData.lacunarity,
+            centre + noiseData.offset, noiseData.normalizeMode);
 
         if (terrainData.useFalloff)
         {
@@ -173,15 +198,13 @@ public class ProceduralTerrainGenerator : MonoBehaviour
                 {
                     if (terrainData.useFalloff)
                     {
-                        noiceMap[x, y] = Mathf.Clamp01(noiceMap[x, y] - falloffMap[x, y]);
+                        noiseMap[x, y] = Mathf.Clamp01(noiseMap[x, y] - falloffMap[x, y]);
                     }
                 }
             }
         }
         
-        textureData.UpdateMeshHeights(terrainMaterial, terrainData.minHeight, terrainData.maxHeight);
-
-        return new MapData(noiceMap);
+        return new MapData(noiseMap);
     }
     
     private struct MapThreadInfo<T>

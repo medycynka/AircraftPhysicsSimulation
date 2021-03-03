@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 
@@ -9,6 +7,7 @@ public class DataUpdater : ScriptableObject
     public event Action ONValuesUpdated;
     public bool autoUpdate;
 
+    #if UNITY_EDITOR
     private void OnValidate()
     {
         if (autoUpdate)
@@ -25,4 +24,5 @@ public class DataUpdater : ScriptableObject
             ONValuesUpdated();
         }
     }
+    #endif
 }

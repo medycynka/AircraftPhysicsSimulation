@@ -2,7 +2,7 @@ using UnityEngine;
 
 
 [CreateAssetMenu(fileName = "NoiseDataConfiguration", menuName = "Procedural Terrain/Noise Data")]
-public class NoiceData : DataUpdater
+public class NoiseData : DataUpdater
 {
     public int seed;
     [Range(0, 50)] public float perlinNoiseScale;
@@ -10,5 +10,5 @@ public class NoiceData : DataUpdater
     [Range(0, 1)] public float persistence;
     [Range(1, 25)]public float lacunarity;
     public Vector2 offset;
-    public NoiceGenerator.NormalizeMode normalizeMode;
+    public NoiseGenerator.NormalizeMode normalizeMode;
 }
