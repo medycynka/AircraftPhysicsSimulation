@@ -4,7 +4,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "HeightMapConfiguration", menuName = "Procedural Terrain/Height Map Settings")]
 public class HeightMapSettings : DataUpdater
 {
-    public NoiseSettings noiseSettings;
+    public MeshNoiseSettings meshNoiseSettings;
     public float heightMultiplier;
     public bool useFalloff;
     public AnimationCurve heightCurve;

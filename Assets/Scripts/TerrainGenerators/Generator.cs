@@ -3,7 +3,7 @@ using UnityEngine;
 
 public static class Generator
 {
-    public static float[,] GenerateNoiseMap(int mapWidth, int mapHeight, NoiseSettings settings, Vector2 sampleCenter)
+    public static float[,] GenerateNoiseMap(int mapWidth, int mapHeight, MeshNoiseSettings settings, Vector2 sampleCenter)
     {
         float[,] noiseMap = new float[mapWidth, mapHeight];
         System.Random prng = new System.Random(settings.seed);
@@ -458,7 +458,7 @@ public class MeshData
 
 
 [System.Serializable]
-public class NoiseSettings
+public class MeshNoiseSettings
 {
     public int seed;
     [Range(0.01f, 100)] public float scale = 40f;

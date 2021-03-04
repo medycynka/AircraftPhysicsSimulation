@@ -8,14 +8,14 @@
       <e p="Assembly-CSharp-Editor.csproj" t="IncludeRecursive" />
       <e p="Assembly-CSharp.csproj" t="IncludeRecursive" />
       <e p="Assets" t="Include">
-        <e p="SampleAssets" t="Include">
-          <e p="Scripts" t="Include">
-            <e p="LookWithMouse.cs" t="Include" />
-            <e p="PlayerMovement.cs" t="Include" />
-            <e p="SimpleCameraController.cs" t="Include" />
-          </e>
-        </e>
         <e p="Samples" t="Include">
+          <e p="SampleAssets" t="Include">
+            <e p="Scripts" t="Include">
+              <e p="LookWithMouse.cs" t="Include" />
+              <e p="PlayerMovement.cs" t="Include" />
+              <e p="SimpleCameraController.cs" t="Include" />
+            </e>
+          </e>
           <e p="Terrain Tools" t="Include">
             <e p="0.1.0-preview" t="Include">
               <e p="Terrain Assets" t="Include">
@@ -41,20 +41,46 @@
               <e p="AircraftPhysicsDisplaySettings.cs" t="Include" />
             </e>
           </e>
+          <e p="PlanetsGenerator" t="Include">
+            <e p="ColorGenerator.cs" t="Include" />
+            <e p="ConditionalHideAttribute.cs" t="Include" />
+            <e p="Data" t="Include">
+              <e p="ColorSettings.cs" t="Include" />
+              <e p="PlanetNoiseSettings.cs" t="Include" />
+              <e p="ShapeSettings.cs" t="Include" />
+            </e>
+            <e p="Editors" t="Include">
+              <e p="ConditionalHidePropertyDrawer.cs" t="Include" />
+              <e p="PlanetEditor.cs" t="Include" />
+            </e>
+            <e p="MinMax.cs" t="Include" />
+            <e p="Noise" t="Include">
+              <e p="INoiseFilter.cs" t="Include" />
+              <e p="Noise.cs" t="Include" />
+              <e p="NoiseFilterFactory.cs" t="Include" />
+              <e p="RigidNoiseFilter.cs" t="Include" />
+              <e p="SimpleNoiseFilter.cs" t="Include" />
+            </e>
+            <e p="Planet.cs" t="Include" />
+            <e p="ShapeGenerator.cs" t="Include" />
+            <e p="TerrainFace.cs" t="Include" />
+          </e>
           <e p="TerrainGenerators" t="Include">
             <e p="DataStorage" t="Include">
               <e p="DataUpdater.cs" t="Include" />
-              <e p="DataUpdaterEditor.cs" t="Include" />
               <e p="HeightMapSettings.cs" t="Include" />
               <e p="MeshSettings.cs" t="Include" />
               <e p="TextureData.cs" t="Include" />
+            </e>
+            <e p="Editors" t="Include">
+              <e p="DataUpdaterEditor.cs" t="Include" />
+              <e p="MapPreviewEditor.cs" t="Include" />
             </e>
             <e p="Enums.cs" t="Include" />
             <e p="FalloffGenerator.cs" t="Include" />
             <e p="Generator.cs" t="Include" />
             <e p="HeightMapGenerator.cs" t="Include" />
             <e p="MapPreview.cs" t="Include" />
-            <e p="MapPreviewEditor.cs" t="Include" />
             <e p="TerrainChunk.cs" t="Include" />
             <e p="TerrainGenerator.cs" t="Include" />
             <e p="ThreadedDataRequester.cs" t="Include" />
