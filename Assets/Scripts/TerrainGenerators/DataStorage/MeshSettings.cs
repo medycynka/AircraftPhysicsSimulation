@@ -15,6 +15,6 @@ public class MeshSettings : DataUpdater
     public ChunkSize chunkSize = ChunkSize._240x240;
     public FlatShadedChunkSize flatShadedChunkSize = FlatShadedChunkSize._96x96;
     
-    public int numVertsPerLine => SupportedChunkSizes[useFlatShading ? (int)flatShadedChunkSize : (int)chunkSize] + 1;
+    public int numVertsPerLine => SupportedChunkSizes[useFlatShading ? (int)flatShadedChunkSize : (int)chunkSize] + 5;
     public float meshWorldSize => (numVertsPerLine - 3) * meshScale;
 }

@@ -53,10 +53,11 @@
             <e p="FalloffGenerator.cs" t="Include" />
             <e p="Generator.cs" t="Include" />
             <e p="HeightMapGenerator.cs" t="Include" />
-            <e p="InfinityGenerator.cs" t="Include" />
-            <e p="MapDisplayer.cs" t="Include" />
-            <e p="ProceduralTerrainGenerator.cs" t="Include" />
-            <e p="ProceduralTerrainGeneratorEditor.cs" t="Include" />
+            <e p="MapPreview.cs" t="Include" />
+            <e p="MapPreviewEditor.cs" t="Include" />
+            <e p="TerrainChunk.cs" t="Include" />
+            <e p="TerrainGenerator.cs" t="Include" />
+            <e p="ThreadedDataRequester.cs" t="Include" />
           </e>
         </e>
       </e>
