@@ -1,34 +1,37 @@
-﻿using UnityEngine;
+﻿#if UNITY_EDITOR
 using UnityEditor;
 
 [CustomEditor(typeof(AerodynamicSurfaceManager)), CanEditMultipleObjects()]
 public class AeroSurfaceEditor : Editor
 {
-    SerializedProperty config;
-    SerializedProperty isControlSurface;
-    SerializedProperty inputType;
-    SerializedProperty inputMultiplyer;
-    AerodynamicSurfaceManager _surfaceManager;
+    private SerializedProperty _config;
+    private SerializedProperty _isControlSurface;
+    private SerializedProperty _inputType;
+    private SerializedProperty _inputMultiplier;
+    private AerodynamicSurfaceManager _surfaceManager;
 
     private void OnEnable()
     {
-        config = serializedObject.FindProperty("config");
-        isControlSurface = serializedObject.FindProperty("isControlSurface");
-        inputType = serializedObject.FindProperty("inputType");
-        inputMultiplyer = serializedObject.FindProperty("inputMultiplier");
+        _config = serializedObject.FindProperty("config");
+        _isControlSurface = serializedObject.FindProperty("isControlSurface");
+        _inputType = serializedObject.FindProperty("inputType");
+        _inputMultiplier = serializedObject.FindProperty("inputMultiplier");
         _surfaceManager = target as AerodynamicSurfaceManager;
     }
 
     public override void OnInspectorGUI()
     {
         serializedObject.Update();
-        EditorGUILayout.PropertyField(config);
-        EditorGUILayout.PropertyField(isControlSurface);
+        EditorGUILayout.PropertyField(_config);
+        EditorGUILayout.PropertyField(_isControlSurface);
+        
         if (_surfaceManager.isControlSurface)
         {
-            EditorGUILayout.PropertyField(inputType);
-            EditorGUILayout.PropertyField(inputMultiplyer);
+            EditorGUILayout.PropertyField(_inputType);
+            EditorGUILayout.PropertyField(_inputMultiplier);
         }
+        
         serializedObject.ApplyModifiedProperties();
     }
 }
+#endif

@@ -54,14 +54,17 @@ public class AircraftPhysicsDisplaySettings : ScriptableObject
     public static AircraftPhysicsDisplaySettings Load()
     {
         string[] guids = UnityEditor.AssetDatabase.FindAssets("t:AircraftPhysicsDisplaySettings");
+        
         if (guids.Length == 0)
         {
             Debug.LogWarning("Could not find AircraftPhysicsDisplaySettings asset. Will use default settings instead.");
+            
             return CreateInstance<AircraftPhysicsDisplaySettings>();
         }
         else
         {
             string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guids[0]);
+            
             return UnityEditor.AssetDatabase.LoadAssetAtPath<AircraftPhysicsDisplaySettings>(path);
         }
     }

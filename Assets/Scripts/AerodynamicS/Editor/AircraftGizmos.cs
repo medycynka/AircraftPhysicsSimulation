@@ -1,5 +1,4 @@
 ﻿#if UNITY_EDITOR
-using System;
 using UnityEditor;
 using UnityEngine;
 
@@ -11,8 +10,11 @@ public static class AircraftGizmos
         AircraftPhysicsDisplaySettings settings = AircraftPhysicsDisplaySettings.instance;
         Vector3 weight = phys.GetComponent<Rigidbody>().mass * Physics.gravity;
         float scale = settings.lengthScale;
+
         if (settings.scaleForcesByWeight)
+        {
             scale /= weight.magnitude;
+        }
 
         if (settings.showCenterOfMass)
         {
@@ -49,7 +51,12 @@ public static class AircraftGizmos
     public static void SurfaceGizmos(AerodynamicSurfaceManager surf, GizmoType gizmoType)
     {
         Rigidbody rb = surf.GetComponentInParent<Rigidbody>();
-        if (surf.Config == null || rb == null) return;
+        
+        if (surf.Config == null || rb == null)
+        {
+            return;
+        }
+        
         AircraftPhysicsDisplaySettings settings = AircraftPhysicsDisplaySettings.instance;
 
         // Selection shape
@@ -65,10 +72,12 @@ public static class AircraftGizmos
         if (settings.showForces)
         {
             float scale = settings.lengthScale;
+            
             if (settings.scaleForcesByWeight)
             {
                 scale /= rb.mass * Physics.gravity.magnitude;
             }
+            
             DrawForces(surf.transform, surf.CurrentLift * scale, surf.CurrentDrag * scale, surf.CurrentTorque * scale);
         }
     }
@@ -103,6 +112,7 @@ public static class AircraftGizmos
 
         DrawArrow(transform.position, drag * 1, settings.dragColor, 0.08f * settings.widthScale);
         DrawArrow(transform.position, lift * 1, settings.liftColor, 0.08f * settings.widthScale);
+        
         if (settings.showTorque)
         {
             DrawArrow(transform.position, torq * 1, settings.torqColor, 0.08f * settings.widthScale);
@@ -152,10 +162,12 @@ public static class AircraftGizmos
         vertices[1] = new Vector3(height, 0, width) * 0.5f;
         vertices[2] = new Vector3(-height, 0, width) * 0.5f;
         vertices[3] = new Vector3(-height, 0, -width) * 0.5f;
+        
         for (int i = 0; i < 4; i++)
         {
             vertices[i] = rotation * vertices[i] + position;
         }
+        
         return vertices;
     }
 }

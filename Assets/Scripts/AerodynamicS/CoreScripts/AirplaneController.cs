@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 
 [RequireComponent(typeof(Rigidbody))]
@@ -19,11 +20,12 @@ public class AirplaneController : MonoBehaviour
     [Range(0, 1)] public float flapPower;
     [Range(0, 0.3f)] public float flapIncrementPower = 0.15f;
     public int flapMaxIncrementAmount = 3;
-    public Text displayText;
+    public TextMeshProUGUI displayText;
 
     private float _thrustPercent;
     private float _brakesTorque;
-    private int _count;
+    private int _incCount;
+    private int _decCount;
     private PhysicsManager _physicsManager;
     private Rigidbody _rb;
 
@@ -35,34 +37,10 @@ public class AirplaneController : MonoBehaviour
 
     private void Update()
     {
-        pitchPower = Input.GetAxis("Vertical");
-        rollPower = Input.GetAxis("Horizontal");
-        yawPower = Input.GetAxis("Yaw");
-
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            _thrustPercent = _thrustPercent > 0 ? 0 : 1f;
-        }
-
-        if (Input.GetKeyDown(KeyCode.F))
-        {
-            if (_count < flapMaxIncrementAmount)
-            {
-                flapPower += flapIncrementPower;
-                _count++;
-            }
-        }
-        
-        if (Input.GetKeyDown(KeyCode.G))
-        {
-            flapPower = 0.0f;
-            _count = 0;
-        }
-
-        if (Input.GetKeyDown(KeyCode.B))
-        {
-            _brakesTorque = _brakesTorque > 0 ? 0 : 100f;
-        }
+        HandleAwsdInput();
+        HandleQeInput();
+        HandleTrustAndBreaks();
+        HandleFlapsInput();
 
         UpdateVisibleTextValue();
     }
@@ -72,11 +50,79 @@ public class AirplaneController : MonoBehaviour
         SetControlSurfecesAngles(pitchPower, rollPower, yawPower, flapPower);
         _physicsManager.SetThrustPercent(_thrustPercent);
 
-        for (var i = 0; i < wheels.Count; i++)
+        for (int i = 0; i < wheels.Count; i++)
         {
             wheels[i].brakeTorque = _brakesTorque;
             // small torque to wake up wheel collider
             wheels[i].motorTorque = 0.01f;
+        }
+    }
+
+    private void HandleAwsdInput()
+    {
+        pitchPower = Input.GetAxis("Vertical");
+        rollPower = Input.GetAxis("Horizontal");
+    }
+
+    private void HandleQeInput()
+    {
+        yawPower = Input.GetAxis("Yaw");
+    }
+    
+    private void HandleTrustAndBreaks()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            _thrustPercent = _thrustPercent > 0 ? 0 : 1f;
+        }
+        
+        if (Input.GetKeyDown(KeyCode.B))
+        {
+            _brakesTorque = _brakesTorque > 0 ? 0 : 100f;
+        }
+    }
+
+    private void HandleFlapsInput()
+    {
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            if (_incCount < flapMaxIncrementAmount)
+            {
+                flapPower += flapIncrementPower;
+
+                if (_decCount > 0)
+                {
+                    _decCount--;
+                }
+                else
+                {
+                    _incCount++;
+                }
+            }
+        }
+        
+        if (Input.GetKeyDown(KeyCode.G))
+        {
+            if (_decCount < flapMaxIncrementAmount)
+            {
+                flapPower -= flapIncrementPower;
+
+                if (_incCount > 0)
+                {
+                    _incCount--;
+                }
+                else
+                {
+                    _decCount++;
+                }
+            }
+        }
+        
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            flapPower = 0.0f;
+            _incCount = 0;
+            _decCount = 0;
         }
     }
 
@@ -90,7 +136,7 @@ public class AirplaneController : MonoBehaviour
 
     private void SetControlSurfecesAngles(float pitch, float roll, float yaw, float flap)
     {
-        for (var i = 0; i < controlSurfaces.Count; i++)
+        for (int i = 0; i < controlSurfaces.Count; i++)
         {
             switch (controlSurfaces[i].inputType)
             {

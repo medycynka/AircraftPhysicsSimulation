@@ -1,58 +1,62 @@
-﻿using UnityEditor;
+﻿#if UNITY_EDITOR
+using UnityEditor;
 using UnityEngine;
 
 [CustomEditor(typeof(AerodynamicSurface)), CanEditMultipleObjects()]
 public class AeroSurfaceConfigEditor : Editor
 {
-    SerializedProperty liftSlope;
-    SerializedProperty skinFriction;
-    SerializedProperty zeroLiftAoA;
-    SerializedProperty stallAngleHigh;
-    SerializedProperty stallAngleLow;
-    SerializedProperty chord;
-    SerializedProperty flapFraction;
-    SerializedProperty span;
-    SerializedProperty autoAspectRatio;
-    SerializedProperty aspectRatio;
-    AerodynamicSurface config;
+    private SerializedProperty _liftSlope;
+    private SerializedProperty _skinFriction;
+    private SerializedProperty _zeroLiftAoA;
+    private SerializedProperty _stallAngleHigh;
+    private SerializedProperty _stallAngleLow;
+    private SerializedProperty _chord;
+    private SerializedProperty _flapFraction;
+    private SerializedProperty _span;
+    private SerializedProperty _autoAspectRatio;
+    private SerializedProperty _aspectRatio;
+    private AerodynamicSurface _config;
 
     private void OnEnable()
     {
-        liftSlope = serializedObject.FindProperty("liftSlope");
-        skinFriction = serializedObject.FindProperty("skinFriction");
-        zeroLiftAoA = serializedObject.FindProperty("zeroLiftAoA");
-        stallAngleHigh = serializedObject.FindProperty("stallAngleHigh");
-        stallAngleLow = serializedObject.FindProperty("stallAngleLow");
-        chord = serializedObject.FindProperty("chord");
-        flapFraction = serializedObject.FindProperty("flapFraction");
-        span = serializedObject.FindProperty("span");
-        autoAspectRatio = serializedObject.FindProperty("autoAspectRatio");
-        aspectRatio = serializedObject.FindProperty("aspectRatio");
-        config = target as AerodynamicSurface;
+        _liftSlope = serializedObject.FindProperty("liftSlope");
+        _skinFriction = serializedObject.FindProperty("skinFriction");
+        _zeroLiftAoA = serializedObject.FindProperty("zeroLiftAoA");
+        _stallAngleHigh = serializedObject.FindProperty("stallAngleHigh");
+        _stallAngleLow = serializedObject.FindProperty("stallAngleLow");
+        _chord = serializedObject.FindProperty("chord");
+        _flapFraction = serializedObject.FindProperty("flapFraction");
+        _span = serializedObject.FindProperty("span");
+        _autoAspectRatio = serializedObject.FindProperty("autoAspectRatio");
+        _aspectRatio = serializedObject.FindProperty("aspectRatio");
+        _config = target as AerodynamicSurface;
     }
 
     public override void OnInspectorGUI()
     {
         serializedObject.Update();
-        EditorGUILayout.PropertyField(liftSlope);
-        EditorGUILayout.PropertyField(skinFriction);
-        EditorGUILayout.PropertyField(zeroLiftAoA);
-        EditorGUILayout.PropertyField(stallAngleHigh);
-        EditorGUILayout.PropertyField(stallAngleLow);
-        EditorGUILayout.PropertyField(chord);
-        EditorGUILayout.PropertyField(flapFraction);
-        EditorGUILayout.PropertyField(span);
-        EditorGUILayout.PropertyField(autoAspectRatio);
-        if (config.autoAspectRatio)
+        EditorGUILayout.PropertyField(_liftSlope);
+        EditorGUILayout.PropertyField(_skinFriction);
+        EditorGUILayout.PropertyField(_zeroLiftAoA);
+        EditorGUILayout.PropertyField(_stallAngleHigh);
+        EditorGUILayout.PropertyField(_stallAngleLow);
+        EditorGUILayout.PropertyField(_chord);
+        EditorGUILayout.PropertyField(_flapFraction);
+        EditorGUILayout.PropertyField(_span);
+        EditorGUILayout.PropertyField(_autoAspectRatio);
+        
+        if (_config.autoAspectRatio)
         {
             GUI.enabled = false;
-            EditorGUILayout.PropertyField(aspectRatio);
+            EditorGUILayout.PropertyField(_aspectRatio);
             GUI.enabled = true;
         }
         else
         {
-            EditorGUILayout.PropertyField(aspectRatio);
+            EditorGUILayout.PropertyField(_aspectRatio);
         }
+        
         serializedObject.ApplyModifiedProperties();
     }
 }
+#endif
