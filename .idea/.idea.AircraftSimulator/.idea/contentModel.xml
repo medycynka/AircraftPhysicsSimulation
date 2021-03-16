@@ -41,6 +41,15 @@
             </e>
           </e>
         </e>
+        <e p="Models" t="Include">
+          <e p="Models" t="Include">
+            <e p="Civil Aircraft" t="Include">
+              <e p="Shaders" t="Include">
+                <e p="Glass.shader" t="Include" />
+              </e>
+            </e>
+          </e>
+        </e>
         <e p="Samples" t="Include">
           <e p="SampleAssets" t="Include">
             <e p="Scripts" t="Include">
@@ -63,6 +72,7 @@
               <e p="AerodynamicSurface.cs" t="Include" />
               <e p="AerodynamicSurfaceManager.cs" t="Include" />
               <e p="AirplaneController.cs" t="Include" />
+              <e p="DetachablePart.cs" t="Include" />
               <e p="PhysicsManager.cs" t="Include" />
               <e p="PowerTorqueVector3.cs" t="Include" />
             </e>
@@ -118,6 +128,8 @@
             <e p="TerrainGenerator.cs" t="Include" />
             <e p="ThreadedDataRequester.cs" t="Include" />
           </e>
+          <e p="WaveManager.cs" t="Include" />
+          <e p="WavesGenerator.cs" t="Include" />
         </e>
       </e>
       <e p="obj" t="ExcludeRecursive" />
