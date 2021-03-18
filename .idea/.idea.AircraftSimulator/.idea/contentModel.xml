@@ -41,11 +41,13 @@
             </e>
           </e>
         </e>
-        <e p="Models" t="Include">
+        <e p="Misc" t="Include">
           <e p="Models" t="Include">
-            <e p="Civil Aircraft" t="Include">
-              <e p="Shaders" t="Include">
-                <e p="Glass.shader" t="Include" />
+            <e p="Models" t="Include">
+              <e p="Civil Aircraft" t="Include">
+                <e p="Shaders" t="Include">
+                  <e p="Glass.shader" t="Include" />
+                </e>
               </e>
             </e>
           </e>

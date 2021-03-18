@@ -13,6 +13,7 @@ public class AirplaneController : MonoBehaviour
     public List<WheelCollider> wheels;
     public List<DetachablePart> detachableParts;
     public bool randomDetach;
+    public List<Transform> rotators;
     [Range(500f, 10000f)] public float airplaneMass = 1000f;
     public float rollControlSensitivity = 0.2f;
     public float pitchControlSensitivity = 0.2f;
@@ -32,6 +33,10 @@ public class AirplaneController : MonoBehaviour
     private float _currentMass;
     private PhysicsManager _physicsManager;
     private Rigidbody _rb;
+    private Animator _anim;
+    private int _areWheelsOpenId;
+    private int _openWheelsId;
+    private int _closeWheelsId;
 
     public float mass
     {
@@ -55,6 +60,10 @@ public class AirplaneController : MonoBehaviour
     {
         _physicsManager = GetComponent<PhysicsManager>();
         _rb = GetComponent<Rigidbody>();
+        _anim = GetComponentInChildren<Animator>();
+        _areWheelsOpenId = Animator.StringToHash("areWheelsOpen");
+        _openWheelsId = Animator.StringToHash("OpenGear");
+        _closeWheelsId = Animator.StringToHash("CloseGear");
 
         for (int i = 0; i < detachableParts.Count; i++)
         {
@@ -72,6 +81,9 @@ public class AirplaneController : MonoBehaviour
         HandleTrustAndBreaks();
         HandleFlapsInput();
         HandleDetachInput();
+        HandleWheelsInput();
+
+        HandleRotations(Time.deltaTime);
 
         UpdateVisibleTextValue();
     }
@@ -165,17 +177,63 @@ public class AirplaneController : MonoBehaviour
             {
                 int i = Random.Range(0, detachableParts.Count);
                 _currentMass -= detachableParts[i].mass;
-                detachableParts[i].Detach();
+                detachableParts[i].Detach(_rb.velocity);
                 detachableParts.RemoveAt(i);
             }
             else
             {
                 _currentMass -= detachableParts[0].mass;
-                detachableParts[0].Detach();
+                detachableParts[0].Detach(_rb.velocity);
                 detachableParts.RemoveAt(0);
             }
 
             _rb.mass = _currentMass;
+        }
+
+        if (Input.GetKeyDown(KeyCode.LeftShift))
+        {
+            if(Input.GetKeyDown(KeyCode.LeftControl) && detachableParts.Count > 0)
+            {
+                for (int i = 0; i < detachableParts.Count; i++)
+                {
+                    _currentMass -= detachableParts[i].mass;
+                    detachableParts[i].Detach(_rb.velocity);
+                }
+
+                _rb.mass = _currentMass;
+                detachableParts.Clear();
+            }
+        }
+    }
+
+    private void HandleWheelsInput()
+    {
+        if (Input.GetKeyDown(KeyCode.LeftAlt))
+        {
+            if (_anim.GetBool(_areWheelsOpenId))
+            {
+                _anim.CrossFade(_closeWheelsId, 0.2f);
+                _anim.SetBool(_areWheelsOpenId, false);
+            }
+            else
+            {
+                _anim.CrossFade(_openWheelsId, 0.2f);
+                _anim.SetBool(_areWheelsOpenId, true);
+            }
+        }
+    }
+
+    private void HandleRotations(float delta)
+    {
+        if (rotators.Count > 0 && _thrustPercent > 0)
+        {
+            float currentVelocity = _rb.velocity.magnitude;
+            float currentRotation = (currentVelocity > 60 ? 60 : currentVelocity) * 36 * delta;
+            
+            for (int i = 0; i < rotators.Count; i++)
+            {
+                rotators[i].Rotate(0, 0 ,currentRotation);
+            }
         }
     }
 

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PhysicsManager : MonoBehaviour
 {
-    [Range(1, 25)] public float thrust = 5;
+    [Range(1, 250)] public float thrust = 5;
     [Range(0, 5)] public float airDensity = 1.2f;
     public List<AerodynamicSurfaceManager> aerodynamicSurfaces;
 

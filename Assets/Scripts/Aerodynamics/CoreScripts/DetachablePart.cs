@@ -6,7 +6,9 @@ using UnityEngine;
 public class DetachablePart : MonoBehaviour
 {
     [Range(1f, 1000f)] public float mass = 100f;
+    public GameObject detachableHolder;
     public bool isRocket;
+    [Range(1f, 10f)] public float rocketSpeedMultiplier = 2f;
     public GameObject collisionEffect;
     public GameObject startEffect;
 
@@ -37,10 +39,16 @@ public class DetachablePart : MonoBehaviour
         }
     }
 
-    public void Detach()
+    public void Detach(Vector3 velocityDuringDetach)
     {
+        if (detachableHolder != null)
+        {
+            Destroy(detachableHolder);    
+        }
+        
         _rb.isKinematic = false;
         _rb.useGravity = true;
+        _rb.velocity = isRocket ? (velocityDuringDetach * rocketSpeedMultiplier) : velocityDuringDetach;
         _canCollide = true;
         transform.parent = null;
 

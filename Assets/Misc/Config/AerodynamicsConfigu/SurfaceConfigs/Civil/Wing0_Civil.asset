@@ -10,15 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 31ad2ae223750974380ba545a828f9a1, type: 3}
-  m_Name: Wing1_Spitfire
+  m_Name: Wing0_Civil
   m_EditorClassIdentifier: 
   liftSlope: 6.28
   skinFriction: 0.02
   zeroLiftAoA: -3
   stallAngleHigh: 15
   stallAngleLow: -15
-  chord: 3.25
+  chord: 1.2
   flapFraction: 0.3
-  span: 4.5
+  span: 2.1
   autoAspectRatio: 0
   aspectRatio: 7
