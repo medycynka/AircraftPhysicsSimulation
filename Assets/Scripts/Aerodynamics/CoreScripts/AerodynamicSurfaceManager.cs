@@ -175,7 +175,7 @@ public class AerodynamicSurfaceManager : MonoBehaviour
         inducedAngle = Mathf.Lerp(0, inducedAngle, lerpParam);
         
         float effectiveAngle = angleOfAttack - zeroLiftAoA - inducedAngle;
-        float normalCoefficient = FrictionAt90Degrees() * Mathf.Sin(effectiveAngle) *
+        float normalCoefficient = frictionAt90Degrees * Mathf.Sin(effectiveAngle) *
                                   (1 / (0.56f + 0.44f * Mathf.Abs(Mathf.Sin(effectiveAngle))) -
                                    0.41f * (1 - Mathf.Exp(-17 / config.aspectRatio)));
         float tangentialCoefficient = 0.5f * config.skinFriction * Mathf.Cos(effectiveAngle);
@@ -191,10 +191,7 @@ public class AerodynamicSurfaceManager : MonoBehaviour
         return 0.25f - 0.175f * (1 - 2 * Mathf.Abs(effectiveAngle) / Mathf.PI);
     }
 
-    private float FrictionAt90Degrees()
-    {
-        return 1.98f - 4.26e-2f * _flapAngle * _flapAngle + 2.1e-1f * _flapAngle;
-    }
+    private float frictionAt90Degrees => 1.98f - 4.26e-2f * _flapAngle * _flapAngle + 2.1e-1f * _flapAngle;
 
     private static float FlapEffectivenessCorrection(float flapAngle)
     {

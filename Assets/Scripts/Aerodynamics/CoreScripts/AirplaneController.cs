@@ -14,7 +14,7 @@ public class AirplaneController : MonoBehaviour
     public List<DetachablePart> detachableParts;
     public bool randomDetach;
     public List<Transform> rotators;
-    [Range(500f, 10000f)] public float airplaneMass = 1000f;
+    [Range(500f, 25000f)] public float airplaneMass = 1000f;
     public float rollControlSensitivity = 0.2f;
     public float pitchControlSensitivity = 0.2f;
     public float yawControlSensitivity = 0.2f;
@@ -38,23 +38,7 @@ public class AirplaneController : MonoBehaviour
     private int _openWheelsId;
     private int _closeWheelsId;
 
-    public float mass
-    {
-        get
-        {
-            if (_currentMass < 500)
-            {
-                _currentMass = airplaneMass;
-
-                for (int i = 0; i < detachableParts.Count; i++)
-                {
-                    _currentMass += detachableParts[i].mass;
-                }
-            }
-
-            return _currentMass;
-        }
-    }
+    public float mass => _currentMass;
 
     private void Start()
     {
@@ -70,7 +54,14 @@ public class AirplaneController : MonoBehaviour
             detachableParts[i].transform.parent = transform;
         }
         
-        _currentMass = mass;
+        _currentMass = airplaneMass;
+
+        for (int i = 0; i < detachableParts.Count; i++)
+        {
+            _currentMass += detachableParts[i].mass;
+        }
+
+        airplaneMass = _currentMass;
         _rb.mass = _currentMass;
     }
 
@@ -188,6 +179,7 @@ public class AirplaneController : MonoBehaviour
             }
 
             _rb.mass = _currentMass;
+            airplaneMass = _currentMass;
         }
 
         if (Input.GetKeyDown(KeyCode.LeftShift))
@@ -203,6 +195,8 @@ public class AirplaneController : MonoBehaviour
                 _rb.mass = _currentMass;
                 detachableParts.Clear();
             }
+            
+            airplaneMass = _currentMass;
         }
     }
 
