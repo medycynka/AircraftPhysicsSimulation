@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 
 public enum ControlInputType { Pitch, Yaw, Roll, Flap }
@@ -11,10 +12,14 @@ public class AerodynamicSurfaceManager : MonoBehaviour
     public float inputMultiplier = 1;
 
     private float _flapAngle;
+    
+    private const float deg2Rad = Mathf.Deg2Rad;
+    private const float deg2Rad50 = deg2Rad * 50;
+    private const float pi = Mathf.PI;
 
     public void SetFlapAngle(float angle)
     {
-        _flapAngle = Mathf.Clamp(angle, -Mathf.Deg2Rad * 50, Mathf.Deg2Rad * 50);
+        _flapAngle = Mathf.Clamp(angle, -deg2Rad50, deg2Rad50);
     }
 
     public PowerTorqueVector3 CalculateForces(Vector3 worldAirVelocity, float airDensity, Vector3 relativePosition)
@@ -27,27 +32,24 @@ public class AerodynamicSurfaceManager : MonoBehaviour
         }
 
         // Accounting for aspect ratio effect on lift coefficient.
-        float correctedLiftSlope = config.liftSlope * config.aspectRatio /
-                                   (config.aspectRatio + 2 * (config.aspectRatio + 4) / (config.aspectRatio + 2));
+        float correctedLiftSlope = config.liftSlope * config.aspectRatio / (config.aspectRatio + 2 * (config.aspectRatio + 4) / (config.aspectRatio + 2));
 
         // Calculating flap deflection influence on zero lift angle of attack
         // and angles at which stall happens.
         float theta = Mathf.Acos(2 * config.flapFraction - 1);
-        float flapEffectivness = 1 - (theta - Mathf.Sin(theta)) / Mathf.PI;
-        float deltaLift = correctedLiftSlope * flapEffectivness * FlapEffectivenessCorrection(_flapAngle) * _flapAngle;
-        float zeroLiftAoaBase = config.zeroLiftAoA * Mathf.Deg2Rad;
+        float deltaLift = correctedLiftSlope * (1 - (theta - Mathf.Sin(theta)) / pi) * FlapEffectivenessCorrection(_flapAngle) * _flapAngle;
+        float zeroLiftAoaBase = config.zeroLiftAoA * deg2Rad;
         float zeroLiftAoA = zeroLiftAoaBase - deltaLift / correctedLiftSlope;
-        float stallAngleHighBase = config.stallAngleHigh * Mathf.Deg2Rad;
-        float stallAngleLowBase = config.stallAngleLow * Mathf.Deg2Rad;
-        float clMaxHigh = correctedLiftSlope * (stallAngleHighBase - zeroLiftAoaBase) + deltaLift * LiftCoefficientMaxFraction(config.flapFraction);
-        float clMaxLow = correctedLiftSlope * (stallAngleLowBase - zeroLiftAoaBase) + deltaLift * LiftCoefficientMaxFraction(config.flapFraction);
+        float clMaxHigh = correctedLiftSlope * (config.stallAngleHigh * deg2Rad - zeroLiftAoaBase) + deltaLift * LiftCoefficientMaxFraction(config.flapFraction);
+        float clMaxLow = correctedLiftSlope * (config.stallAngleLow * deg2Rad - zeroLiftAoaBase) + deltaLift * LiftCoefficientMaxFraction(config.flapFraction);
         float stallAngleHigh = zeroLiftAoA + clMaxHigh / correctedLiftSlope;
         float stallAngleLow = zeroLiftAoA + clMaxLow / correctedLiftSlope;
 
         // Calculating air velocity relative to the surface's coordinate system.
-        // Z component of the velocity is discarded. 
+        // Z component of the velocity is discarded.
         Vector3 airVelocity = transform.InverseTransformDirection(worldAirVelocity);
         airVelocity = new Vector3(airVelocity.x, airVelocity.y);
+
         Vector3 dragDirection = transform.TransformDirection(airVelocity.normalized);
         Vector3 liftDirection = Vector3.Cross(dragDirection, transform.forward);
 
@@ -81,12 +83,9 @@ public class AerodynamicSurfaceManager : MonoBehaviour
         float stallAngleHigh, float stallAngleLow)
     {
         Vector3 aerodynamicCoefficients;
-
         // Low angles of attack mode and stall mode curves are stitched together by a line segment. 
-        float paddingAnglHigh = Mathf.Deg2Rad * Mathf.Lerp(15, 5, (Mathf.Rad2Deg * _flapAngle + 50) / 100);
-        float paddingAnglLow = Mathf.Deg2Rad * Mathf.Lerp(15, 5, (-Mathf.Rad2Deg * _flapAngle + 50) / 100);
-        float paddedStallAngleHigh = stallAngleHigh + paddingAnglHigh;
-        float paddedStallAngleLow = stallAngleLow - paddingAnglLow;
+        float paddedStallAngleHigh = stallAngleHigh + deg2Rad * Mathf.Lerp(15, 5, (deg2Rad * _flapAngle + 50) / 100);
+        float paddedStallAngleLow = stallAngleLow - deg2Rad * Mathf.Lerp(15, 5, (-deg2Rad * _flapAngle + 50) / 100);
 
         if (angleOfAttack < stallAngleHigh && angleOfAttack > stallAngleLow)
         {
@@ -98,30 +97,23 @@ public class AerodynamicSurfaceManager : MonoBehaviour
             if (angleOfAttack > paddedStallAngleHigh || angleOfAttack < paddedStallAngleLow)
             {
                 // Stall mode.
-                aerodynamicCoefficients = CalculateCoefficientsAtStall(
-                    angleOfAttack, correctedLiftSlope, zeroLiftAoA, stallAngleHigh, stallAngleLow);
+                aerodynamicCoefficients = CalculateCoefficientsAtStall(angleOfAttack, correctedLiftSlope, zeroLiftAoA, stallAngleHigh, stallAngleLow);
             }
             else
             {
-                // Linear stitching in-between stall and low angles of attack modes.
-                Vector3 aerodynamicCoefficientsLow;
-                Vector3 aerodynamicCoefficientsStall;
-                float lerpParam;
-
-                if (angleOfAttack > stallAngleHigh)
-                {
-                    aerodynamicCoefficientsLow = CalculateCoefficientsAtLowAoA(stallAngleHigh, correctedLiftSlope, zeroLiftAoA);
-                    aerodynamicCoefficientsStall = CalculateCoefficientsAtStall(
-                        paddedStallAngleHigh, correctedLiftSlope, zeroLiftAoA, stallAngleHigh, stallAngleLow);
-                    lerpParam = (angleOfAttack - stallAngleHigh) / (paddedStallAngleHigh - stallAngleHigh);
-                }
-                else
-                {
-                    aerodynamicCoefficientsLow = CalculateCoefficientsAtLowAoA(stallAngleLow, correctedLiftSlope, zeroLiftAoA);
-                    aerodynamicCoefficientsStall = CalculateCoefficientsAtStall(
-                        paddedStallAngleLow, correctedLiftSlope, zeroLiftAoA, stallAngleHigh, stallAngleLow);
-                    lerpParam = (angleOfAttack - stallAngleLow) / (paddedStallAngleLow - stallAngleLow);
-                }
+                bool angleOfAttackVsStallHigh = angleOfAttack > stallAngleHigh;
+                Vector3 aerodynamicCoefficientsLow = angleOfAttackVsStallHigh
+                    ? CalculateCoefficientsAtLowAoA(stallAngleHigh, correctedLiftSlope, zeroLiftAoA)
+                    : CalculateCoefficientsAtLowAoA(stallAngleLow, correctedLiftSlope, zeroLiftAoA);
+                Vector3 aerodynamicCoefficientsStall = angleOfAttackVsStallHigh
+                    ? CalculateCoefficientsAtStall(paddedStallAngleHigh, correctedLiftSlope, zeroLiftAoA,
+                        stallAngleHigh, stallAngleLow)
+                    : CalculateCoefficientsAtStall(paddedStallAngleLow, correctedLiftSlope, zeroLiftAoA, stallAngleHigh,
+                        stallAngleLow);
+                float lerpParam = angleOfAttackVsStallHigh
+                    ? (angleOfAttack - stallAngleHigh) / (paddedStallAngleHigh - stallAngleHigh)
+                    : (angleOfAttack - stallAngleLow) / (paddedStallAngleLow - stallAngleLow);
+                
                 aerodynamicCoefficients = Vector3.Lerp(aerodynamicCoefficientsLow, aerodynamicCoefficientsStall, lerpParam);
             }
         }
@@ -132,46 +124,27 @@ public class AerodynamicSurfaceManager : MonoBehaviour
     private Vector3 CalculateCoefficientsAtLowAoA(float angleOfAttack, float correctedLiftSlope, float zeroLiftAoA)
     {
         float liftCoefficient = correctedLiftSlope * (angleOfAttack - zeroLiftAoA);
-        float inducedAngle = liftCoefficient / (Mathf.PI * config.aspectRatio);
+        float inducedAngle = liftCoefficient / (pi * config.aspectRatio);
         float effectiveAngle = angleOfAttack - zeroLiftAoA - inducedAngle;
         float tangentialCoefficient = config.skinFriction * Mathf.Cos(effectiveAngle);
-        float normalCoefficient = (liftCoefficient + Mathf.Sin(effectiveAngle) * tangentialCoefficient) /
-                                  Mathf.Cos(effectiveAngle);
-        float dragCoefficient = normalCoefficient * Mathf.Sin(effectiveAngle) +
-                                tangentialCoefficient * Mathf.Cos(effectiveAngle);
-        float torqueCoefficient = -normalCoefficient * TorqueCoefficientProportion(effectiveAngle);
+        float normalCoefficient = (liftCoefficient + Mathf.Sin(effectiveAngle) * tangentialCoefficient) / Mathf.Cos(effectiveAngle);
 
-        return new Vector3(liftCoefficient, dragCoefficient, torqueCoefficient);
+        return new Vector3(liftCoefficient, 
+            normalCoefficient * Mathf.Sin(effectiveAngle) + tangentialCoefficient * Mathf.Cos(effectiveAngle), 
+            -normalCoefficient * TorqueCoefficientProportion(effectiveAngle));
     }
 
     private Vector3 CalculateCoefficientsAtStall(float angleOfAttack, float correctedLiftSlope, float zeroLiftAoA, 
         float stallAngleHigh, float stallAngleLow)
     {
-        float liftCoefficientLowAoA;
-        
-        if (angleOfAttack > stallAngleHigh)
-        {
-            liftCoefficientLowAoA = correctedLiftSlope * (stallAngleHigh - zeroLiftAoA);
-        }
-        else
-        {
-            liftCoefficientLowAoA = correctedLiftSlope * (stallAngleLow - zeroLiftAoA);
-        }
-        
-        float inducedAngle = liftCoefficientLowAoA / (Mathf.PI * config.aspectRatio);
-        float lerpParam;
-        
-        if (angleOfAttack > stallAngleHigh)
-        {
-            lerpParam = (Mathf.PI / 2 - Mathf.Clamp(angleOfAttack, -Mathf.PI / 2, Mathf.PI / 2))
-                / (Mathf.PI / 2 - stallAngleHigh);
-        }
-        else
-        {
-            lerpParam = (-Mathf.PI / 2 - Mathf.Clamp(angleOfAttack, -Mathf.PI / 2, Mathf.PI / 2))
-                / (-Mathf.PI / 2 - stallAngleLow);
-        }
-        
+        float liftCoefficientLowAoA = angleOfAttack > stallAngleHigh
+            ? correctedLiftSlope * (stallAngleHigh - zeroLiftAoA)
+            : correctedLiftSlope * (stallAngleLow - zeroLiftAoA);
+        float inducedAngle = liftCoefficientLowAoA / (pi * config.aspectRatio);
+        float lerpParam = angleOfAttack > stallAngleHigh
+            ? (pi / 2 - Mathf.Clamp(angleOfAttack, -pi / 2, pi / 2)) / (pi / 2 - stallAngleHigh)
+            : (-pi / 2 - Mathf.Clamp(angleOfAttack, -pi / 2, pi / 2)) / (-pi / 2 - stallAngleLow);
+
         inducedAngle = Mathf.Lerp(0, inducedAngle, lerpParam);
         
         float effectiveAngle = angleOfAttack - zeroLiftAoA - inducedAngle;
@@ -179,29 +152,19 @@ public class AerodynamicSurfaceManager : MonoBehaviour
                                   (1 / (0.56f + 0.44f * Mathf.Abs(Mathf.Sin(effectiveAngle))) -
                                    0.41f * (1 - Mathf.Exp(-17 / config.aspectRatio)));
         float tangentialCoefficient = 0.5f * config.skinFriction * Mathf.Cos(effectiveAngle);
-        float liftCoefficient = normalCoefficient * Mathf.Cos(effectiveAngle) - tangentialCoefficient * Mathf.Sin(effectiveAngle);
-        float dragCoefficient = normalCoefficient * Mathf.Sin(effectiveAngle) + tangentialCoefficient * Mathf.Cos(effectiveAngle);
-        float torqueCoefficient = -normalCoefficient * TorqueCoefficientProportion(effectiveAngle);
 
-        return new Vector3(liftCoefficient, dragCoefficient, torqueCoefficient);
+        return new Vector3(normalCoefficient * Mathf.Cos(effectiveAngle) - tangentialCoefficient * Mathf.Sin(effectiveAngle)
+            , normalCoefficient * Mathf.Sin(effectiveAngle) + tangentialCoefficient * Mathf.Cos(effectiveAngle), 
+            -normalCoefficient * TorqueCoefficientProportion(effectiveAngle));
     }
 
-    private static float TorqueCoefficientProportion(float effectiveAngle)
-    {
-        return 0.25f - 0.175f * (1 - 2 * Mathf.Abs(effectiveAngle) / Mathf.PI);
-    }
+    private static float TorqueCoefficientProportion(float effectiveAngle) => 0.25f - 0.175f * (1 - 2 * Mathf.Abs(effectiveAngle) / pi);
 
-    private float frictionAt90Degrees => 1.98f - 4.26e-2f * _flapAngle * _flapAngle + 2.1e-1f * _flapAngle;
+    private float frictionAt90Degrees => 1.98f - 0.0426f * _flapAngle * _flapAngle + 0.21f * _flapAngle;
 
-    private static float FlapEffectivenessCorrection(float flapAngle)
-    {
-        return Mathf.Lerp(0.8f, 0.4f, (flapAngle * Mathf.Rad2Deg - 10) / 50);
-    }
+    private static float FlapEffectivenessCorrection(float flapAngle) => Mathf.Lerp(0.8f, 0.4f, (flapAngle * deg2Rad - 10) / 50);
 
-    private static float LiftCoefficientMaxFraction(float flapFraction)
-    {
-        return Mathf.Clamp01(1 - 0.5f * (flapFraction - 0.1f) / 0.3f);
-    }
+    private static float LiftCoefficientMaxFraction(float flapFraction) => Mathf.Clamp01(1 - 0.5f * (flapFraction - 0.1f) / 0.3f);
 
 #if UNITY_EDITOR
     // For gizmos drawing.

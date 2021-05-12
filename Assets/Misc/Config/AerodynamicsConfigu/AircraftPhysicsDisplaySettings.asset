@@ -15,9 +15,9 @@ MonoBehaviour:
   scaleForcesByWeight: 1
   lengthScale: 1
   widthScale: 1
-  showCenterOfMass: 1
+  showCenterOfMass: 0
   comColor: {r: 1, g: 0.445, b: 0, a: 1}
-  showAerodynamicCenter: 1
+  showAerodynamicCenter: 0
   adcColor: {r: 0, g: 1, b: 0, a: 1}
   displayAngleOfAttack: 5
   displayAirspeed: 50

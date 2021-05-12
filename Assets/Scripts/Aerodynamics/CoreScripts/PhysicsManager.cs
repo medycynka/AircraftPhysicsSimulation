@@ -9,37 +9,39 @@ public class PhysicsManager : MonoBehaviour
     public List<AerodynamicSurfaceManager> aerodynamicSurfaces;
 
     private Rigidbody _rb;
+    private Transform _airplaneTransform;
     private float _thrust;
     private float _thrustPercent;
     private PowerTorqueVector3 _currentForceAndTorque;
-    private const float PredictionTimeStepFraction = 0.5f;
+    private const float predictionTimeStepFraction = 0.5f;
 
     private void Awake()
     {
         _rb = GetComponent<Rigidbody>();
         _thrust = thrust * 1000f;
+        _airplaneTransform = transform;
     }
 
     private void FixedUpdate()
     {
-        HandleCalculations();
+        HandleCalculations(Time.fixedDeltaTime);
     }
 
-    private void HandleCalculations()
+    private void HandleCalculations(float delta)
     {
-        PowerTorqueVector3 forceAndTorqueThisFrame =
-            CalculateAerodynamicForces(_rb.velocity, _rb.angularVelocity, Vector3.zero, airDensity, _rb.worldCenterOfMass);
-        Vector3 velocityPrediction = PredictVelocity(forceAndTorqueThisFrame.p +
-                                                     transform.forward * (_thrust * _thrustPercent) +
-                                                     Physics.gravity * _rb.mass);
-        Vector3 angularVelocityPrediction = PredictAngularVelocity(forceAndTorqueThisFrame.q);
+        PowerTorqueVector3 forceAndTorqueThisFrame = CalculateAerodynamicForces(_rb.velocity, _rb.angularVelocity, 
+            Vector3.zero, airDensity, _rb.worldCenterOfMass);
+        forceAndTorqueThisFrame.p += _airplaneTransform.forward * (_thrust * _thrustPercent) + Physics.gravity * _rb.mass;
+        
+        Vector3 velocityPrediction = PredictVelocity(forceAndTorqueThisFrame.p, delta);
+        Vector3 angularVelocityPrediction = PredictAngularVelocity(forceAndTorqueThisFrame.q, delta);
         PowerTorqueVector3 forceAndTorquePrediction = CalculateAerodynamicForces(velocityPrediction,
             angularVelocityPrediction, Vector3.zero, airDensity, _rb.worldCenterOfMass);
 
         _currentForceAndTorque = (forceAndTorqueThisFrame + forceAndTorquePrediction) * 0.5f;
         _rb.AddForce(_currentForceAndTorque.p);
         _rb.AddTorque(_currentForceAndTorque.q);
-        _rb.AddForce(transform.forward * (_thrust * _thrustPercent));
+        _rb.AddForce(_airplaneTransform.forward * (_thrust * _thrustPercent));
     }
     
     public void SetThrustPercent(float percent)
@@ -48,35 +50,35 @@ public class PhysicsManager : MonoBehaviour
     }
 
     private PowerTorqueVector3 CalculateAerodynamicForces(Vector3 velocity, Vector3 angularVelocity, Vector3 wind, 
-        float airDensity, Vector3 centerOfMass)
+        float currentAirDensity, Vector3 centerOfMass)
     {
         PowerTorqueVector3 forceAndTorque = new PowerTorqueVector3();
 
         for (var i = 0; i < aerodynamicSurfaces.Count; i++)
         {
             Vector3 relativePosition = aerodynamicSurfaces[i].transform.position - centerOfMass;
-            forceAndTorque += aerodynamicSurfaces[i]
-                .CalculateForces(-velocity + wind - Vector3.Cross(angularVelocity, relativePosition), 
-                    airDensity, relativePosition);
+            forceAndTorque += aerodynamicSurfaces[i].CalculateForces(
+                -velocity + wind - Vector3.Cross(angularVelocity, relativePosition), 
+                currentAirDensity, relativePosition);
         }
 
         return forceAndTorque;
     }
 
-    private Vector3 PredictVelocity(Vector3 force)
+    private Vector3 PredictVelocity(Vector3 force, float delta)
     {
-        return _rb.velocity + Time.fixedDeltaTime * PredictionTimeStepFraction * force / _rb.mass;
+        return _rb.velocity + delta * predictionTimeStepFraction * force / _rb.mass;
     }
 
-    private Vector3 PredictAngularVelocity(Vector3 torque)
+    private Vector3 PredictAngularVelocity(Vector3 torque, float delta)
     {
         Quaternion inertiaTensorWorldRotation = _rb.rotation * _rb.inertiaTensorRotation;
         Vector3 torqueInDiagonalSpace = Quaternion.Inverse(inertiaTensorWorldRotation) * torque;
         Vector3 angularVelocityChangeInDiagonalSpace = new Vector3(torqueInDiagonalSpace.x / _rb.inertiaTensor.x,
             torqueInDiagonalSpace.y / _rb.inertiaTensor.y, torqueInDiagonalSpace.z / _rb.inertiaTensor.z);
 
-        return _rb.angularVelocity + Time.fixedDeltaTime * PredictionTimeStepFraction
-            * (inertiaTensorWorldRotation * angularVelocityChangeInDiagonalSpace);
+        return _rb.angularVelocity + delta * predictionTimeStepFraction
+                                           * (inertiaTensorWorldRotation * angularVelocityChangeInDiagonalSpace);
     }
 
 #if UNITY_EDITOR
@@ -98,8 +100,8 @@ public class PhysicsManager : MonoBehaviour
         if (_rb == null)
         {
             com = GetComponent<Rigidbody>().worldCenterOfMass;
-            forceAndTorque =
-                CalculateAerodynamicForces(-displayAirVelocity, Vector3.zero, Vector3.zero, displayAirDensity, com);
+            forceAndTorque = CalculateAerodynamicForces(-displayAirVelocity, Vector3.zero, 
+                Vector3.zero, displayAirDensity, com);
         }
         else
         {

@@ -37,6 +37,8 @@ public class AirplaneController : MonoBehaviour
     private int _areWheelsOpenId;
     private int _openWheelsId;
     private int _closeWheelsId;
+    private bool _thrustChanged;
+    private bool _breakChanged;
 
     public float mass => _currentMass;
 
@@ -82,13 +84,21 @@ public class AirplaneController : MonoBehaviour
     private void FixedUpdate()
     {
         SetControlSurfecesAngles(pitchPower, rollPower, yawPower, flapPower);
-        _physicsManager.SetThrustPercent(_thrustPercent);
 
-        for (int i = 0; i < wheels.Count; i++)
+        if (_thrustChanged)
         {
-            wheels[i].brakeTorque = _brakesTorque;
-            // small torque to wake up wheel collider
-            wheels[i].motorTorque = 0.01f;
+            _physicsManager.SetThrustPercent(_thrustPercent);
+            _thrustChanged = false;
+        }
+
+        if (Time.frameCount % 10 == 0 || _breakChanged)
+        {
+            for (int i = 0; i < wheels.Count; i++)
+            {
+                wheels[i].brakeTorque = _brakesTorque;
+                wheels[i].motorTorque = 0.01f;
+            }
+            _breakChanged = false;
         }
     }
 
@@ -107,11 +117,13 @@ public class AirplaneController : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
+            _thrustChanged = true;
             _thrustPercent = _thrustPercent > 0 ? 0 : 1f;
         }
         
         if (Input.GetKeyDown(KeyCode.B))
         {
+            _breakChanged = true;
             _brakesTorque = _brakesTorque > 0 ? 0 : 100f;
         }
     }
@@ -208,11 +220,21 @@ public class AirplaneController : MonoBehaviour
             {
                 _anim.CrossFade(_closeWheelsId, 0.2f);
                 _anim.SetBool(_areWheelsOpenId, false);
+
+                for (int i = 0; i < wheels.Count; i++)
+                {
+                    wheels[i].gameObject.SetActive(false);
+                }
             }
             else
             {
                 _anim.CrossFade(_openWheelsId, 0.2f);
                 _anim.SetBool(_areWheelsOpenId, true);
+                
+                for (int i = 0; i < wheels.Count; i++)
+                {
+                    wheels[i].gameObject.SetActive(true);
+                }
             }
         }
     }
