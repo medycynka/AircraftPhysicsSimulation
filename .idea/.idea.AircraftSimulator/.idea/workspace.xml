@@ -1,19 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="58faab74-ed4e-40b7-999d-3eff55c97feb" name="Default Changelist" comment="tidy changes">
-      <change afterPath="$PROJECT_DIR$/Assets/Misc/Models/Prefabs/Aircraft_AC310.prefab" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Misc/Models/Prefabs/Aircraft_AC310.prefab.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.AircraftSimulator/.idea/contentModel.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.AircraftSimulator/.idea/indexLayout.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.AircraftSimulator/.idea/indexLayout.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.AircraftSimulator/.idea/modules.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.AircraftSimulator/.idea/riderModule.iml" beforeDir="false" />
+    <list default="true" id="58faab74-ed4e-40b7-999d-3eff55c97feb" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.AircraftSimulator/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.AircraftSimulator/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Misc/Config/AerodynamicsConfigu/AircraftPhysicsDisplaySettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Misc/Config/AerodynamicsConfigu/AircraftPhysicsDisplaySettings.asset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scenes/TestScene.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/TestScene.unity" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/Aerodynamics/CoreScripts/AerodynamicSurfaceManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Aerodynamics/CoreScripts/AerodynamicSurfaceManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Aerodynamics/CoreScripts/AirplaneController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Aerodynamics/CoreScripts/AirplaneController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Aerodynamics/CoreScripts/PhysicsManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Aerodynamics/CoreScripts/PhysicsManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Aerodynamics/Editor/AeroSurfaceConfigDrawer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Aerodynamics/Editor/AeroSurfaceConfigDrawer.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Aerodynamics/Editor/AircraftGizmos.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Aerodynamics/Editor/AircraftGizmos.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -46,7 +39,6 @@
   </component>
   <component name="IdeDocumentHistory">
     <changedPaths>
-      <option value="$PROJECT_DIR$/Assets/Scripts/TerrainGenerators/ThreadedDataRequester.cs" />
       <option value="$PROJECT_DIR$/Assets/Scripts/TerrainGenerators/TerrainChunk.cs" />
       <option value="$PROJECT_DIR$/Assets/Scripts/TerrainGenerators/InfinityGenerator.cs" />
       <option value="$PROJECT_DIR$/Assets/Scripts/TerrainGenerators/TerrainGenerator.cs" />
@@ -90,13 +82,14 @@
       <option value="$PROJECT_DIR$/Assets/Scripts/AerodynamicS/CoreScripts/AirplaneController.cs" />
       <option value="$PROJECT_DIR$/Assets/Scripts/AerodynamicS/Editor/AircraftGizmos.cs" />
       <option value="$PROJECT_DIR$/Assets/Scripts/AerodynamicS/CoreScripts/DetachablePart.cs" />
-      <option value="$PROJECT_DIR$/Assets/Scripts/Aerodynamics/Editor/AircraftGizmos.cs" />
       <option value="$PROJECT_DIR$/Assets/Scripts/Aerodynamics/CoreScripts/AerodynamicSurface.cs" />
       <option value="$PROJECT_DIR$/Assets/Scripts/Aerodynamics/CoreScripts/DetachablePart.cs" />
       <option value="$PROJECT_DIR$/Assets/AssetStore/HydroForm/Scripts/HydroformComponent.cs" />
       <option value="$PROJECT_DIR$/Assets/Scripts/Aerodynamics/CoreScripts/AirplaneController.cs" />
-      <option value="$PROJECT_DIR$/Assets/Scripts/Aerodynamics/CoreScripts/PhysicsManager.cs" />
+      <option value="$PROJECT_DIR$/Assets/Scripts/Aerodynamics/Editor/AircraftGizmos.cs" />
       <option value="$PROJECT_DIR$/Assets/Scripts/Aerodynamics/CoreScripts/AerodynamicSurfaceManager.cs" />
+      <option value="$PROJECT_DIR$/Assets/Scripts/Aerodynamics/CoreScripts/PhysicsManager.cs" />
+      <option value="$PROJECT_DIR$/Assets/Scripts/Aerodynamics/Editor/AeroSurfaceConfigDrawer.cs" />
     </changedPaths>
   </component>
   <component name="ProjectId" id="1pFyhNkJpz8vZQVYatWDoH060GM" />
@@ -163,7 +156,9 @@
       <workItem from="1617714048634" duration="850000" />
       <workItem from="1617820604913" duration="876000" />
       <workItem from="1618471170401" duration="671000" />
-      <workItem from="1620848336060" duration="4152000" />
+      <workItem from="1620848336060" duration="4185000" />
+      <workItem from="1620919563528" duration="574000" />
+      <workItem from="1621963244375" duration="4592000" />
     </task>
     <task id="LOCAL-00001" summary="added chunk size option">
       <created>1614802347023</created>
@@ -228,7 +223,14 @@
       <option name="project" value="LOCAL" />
       <updated>1616056402436</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="tidy changes">
+      <created>1620852566632</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1620852566632</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

@@ -52,7 +52,7 @@ public static class AircraftGizmos
     {
         AirplaneController ac = surf.GetComponentInParent<AirplaneController>();
         
-        if (surf.Config == null || ac == null)
+        if (surf.GetConfig() == null || ac == null)
         {
             return;
         }
@@ -64,9 +64,9 @@ public static class AircraftGizmos
         {
             Gizmos.color = Color.clear;
             Gizmos.matrix = surf.transform.localToWorldMatrix;
-            Gizmos.DrawCube(-Vector3.right * 0.25f * surf.Config.chord, new Vector3(surf.Config.chord, 0.1f, surf.Config.span));
+            Gizmos.DrawCube(-Vector3.right * 0.25f * surf.GetConfig().chord, new Vector3(surf.GetConfig().chord, 0.1f, surf.GetConfig().span));
 
-            DrawSurface(surf.transform, surf.Config, surf.GetFlapAngle(), surf.IsAtStall);
+            DrawSurface(surf.transform, surf.GetConfig(), surf.GetFlapAngle(), surf.isAtStall);
         }
 
         if (settings.showForces)
@@ -78,7 +78,7 @@ public static class AircraftGizmos
                 scale /= ac.mass * Physics.gravity.magnitude;
             }
             
-            DrawForces(surf.transform, surf.CurrentLift * scale, surf.CurrentDrag * scale, surf.CurrentTorque * scale);
+            DrawForces(surf.transform, surf.currentLift * scale, surf.currentDrag * scale, surf.currentTorque * scale);
         }
     }
 

@@ -11,9 +11,9 @@ public class AeroSurfaceConfigDrawer : PropertyDrawer
         
         if (property.isExpanded)
         {
-            var data = property.objectReferenceValue as ScriptableObject;
+            ScriptableObject data = property.objectReferenceValue as ScriptableObject;
             
-            if (data == null)
+            if (!data)
             {
                 return EditorGUIUtility.singleLineHeight;
             }
@@ -30,7 +30,7 @@ public class AeroSurfaceConfigDrawer : PropertyDrawer
                         continue;
                     }
                     
-                    var subProp = serializedObject.FindProperty(prop.name);
+                    SerializedProperty subProp = serializedObject.FindProperty(prop.name);
                     float height = EditorGUI.GetPropertyHeight(subProp, null, true) + EditorGUIUtility.standardVerticalSpacing;
                     totalHeight += height;
                 }
@@ -70,7 +70,6 @@ public class AeroSurfaceConfigDrawer : PropertyDrawer
 
             if (property.isExpanded)
             {
-                // Draw a background that shows us clearly which fields are part of the ScriptableObject
                 GUI.Box(
                     new Rect(0,
                         position.y + EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing - 1,
@@ -78,10 +77,9 @@ public class AeroSurfaceConfigDrawer : PropertyDrawer
                         position.height - EditorGUIUtility.singleLineHeight - EditorGUIUtility.standardVerticalSpacing),
                     "");
                 EditorGUI.indentLevel++;
-                var data = (ScriptableObject)property.objectReferenceValue;
+                ScriptableObject data = (ScriptableObject)property.objectReferenceValue;
                 SerializedObject serializedObject = new SerializedObject(data);
                 var config = (AerodynamicSurface)property.objectReferenceValue;
-                // Iterate over all the values and draw them
                 SerializedProperty prop = serializedObject.GetIterator();
                 float y = position.y + EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
                 
@@ -89,7 +87,6 @@ public class AeroSurfaceConfigDrawer : PropertyDrawer
                 {
                     do
                     {
-                        // Don't bother drawing the class file
                         if (prop.name == "m_Script")
                         {
                             continue;
