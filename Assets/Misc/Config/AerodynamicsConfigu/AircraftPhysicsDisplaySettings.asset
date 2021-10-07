@@ -15,20 +15,20 @@ MonoBehaviour:
   scaleForcesByWeight: 1
   lengthScale: 1
   widthScale: 1
-  showCenterOfMass: 0
-  comColor: {r: 1, g: 0.445, b: 0, a: 1}
-  showAerodynamicCenter: 0
+  showCenterOfMass: 1
+  comColor: {r: 0, g: 1, b: 0.045306206, a: 1}
+  showAerodynamicCenter: 1
   adcColor: {r: 0, g: 1, b: 0, a: 1}
   displayAngleOfAttack: 5
   displayAirspeed: 50
   displayAirDensity: 1.2
   showSurfaces: 1
-  wingColor: {r: 0, g: 0.0703516, b: 1, a: 0.49803922}
-  flapColor: {r: 0.5658865, g: 0, b: 1, a: 0.49803922}
+  wingColor: {r: 0.2545166, g: 0, b: 1, a: 0.49803922}
+  flapColor: {r: 0, g: 1, b: 0.85977316, a: 0.49803922}
   wingAtStallColor: {r: 1, g: 0.103087686, b: 0, a: 0.49803922}
   flapAtStallColor: {r: 1, g: 0, b: 0, a: 0.49803922}
   showForces: 1
   showTorque: 1
-  liftColor: {r: 0, g: 1, b: 1, a: 1}
+  liftColor: {r: 0, g: 0, b: 1, a: 1}
   dragColor: {r: 0.4339623, g: 0, b: 0.06020278, a: 1}
   torqColor: {r: 0.11968652, g: 0.33962262, b: 0.014417935, a: 1}
