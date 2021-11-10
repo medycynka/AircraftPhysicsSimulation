@@ -4,6 +4,9 @@
 [CreateAssetMenu(fileName = "Aerodynamic Surface Config", menuName = "Aerodynamics/Aerodynamic Surface Configuration")]
 public class AerodynamicSurface : ScriptableObject
 {
+    public Vector3 position;
+    public Quaternion rotation;
+    public Vector3 scale;
     public float liftSlope = 6.28f;
     public float skinFriction = 0.02f;
     public float zeroLiftAoA;

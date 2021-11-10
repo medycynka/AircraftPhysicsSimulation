@@ -4,6 +4,7 @@ using UnityEngine;
 
 public enum ControlInputType { Pitch, Yaw, Roll, Flap }
 
+
 public class AerodynamicSurfaceManager : MonoBehaviour
 {
     public AerodynamicSurface config;
@@ -145,7 +146,11 @@ public class AerodynamicSurfaceManager : MonoBehaviour
             -normalCoefficient * TorqueCoefficientProportion(effectiveAngle));
     }
 
-    private static float CorrectedLiftSlope(AerodynamicSurface config) => config.liftSlope * config.aspectRatio / (config.aspectRatio + 2 * (config.aspectRatio + 4) / (config.aspectRatio + 2));
+    private static float CorrectedLiftSlope(AerodynamicSurface config)
+    {
+        return config.liftSlope * config.aspectRatio /
+               (config.aspectRatio + 2 * (config.aspectRatio + 4) / (config.aspectRatio + 2));
+    }
 
     private static float Theta(float flapFraction)
     {
@@ -157,14 +162,12 @@ public class AerodynamicSurfaceManager : MonoBehaviour
         return liftSlope * (1 - (theta - Mathf.Sin(theta)) / pi) * FlapEffectivenessCorrection(flapAngle) * flapAngle;
     }
 
-    private static float MaxHigh(float liftSlope, AerodynamicSurface config, float zeroLift,
-        float deltaLift)
+    private static float MaxHigh(float liftSlope, AerodynamicSurface config, float zeroLift, float deltaLift)
     {
         return liftSlope * (config.stallAngleHigh * deg2Rad - zeroLift) + deltaLift * LiftCoefficientMaxFraction(config.flapFraction);
     }
     
-    private static float MaxLow(float liftSlope, AerodynamicSurface config, float zeroLift,
-        float deltaLift)
+    private static float MaxLow(float liftSlope, AerodynamicSurface config, float zeroLift, float deltaLift)
     {
         return liftSlope * (config.stallAngleLow * deg2Rad - zeroLift) + deltaLift * LiftCoefficientMaxFraction(config.flapFraction);
     }
