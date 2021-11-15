@@ -12,6 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 31ad2ae223750974380ba545a828f9a1, type: 3}
   m_Name: Wing0_Cessna
   m_EditorClassIdentifier: 
+  position: {x: -1.56, y: 2.057, z: 0.86}
+  rotation: {x: 0, y: 0, z: 0, w: 1}
+  scale: {x: 1, y: 1, z: 1}
   liftSlope: 6.28
   skinFriction: 0.02
   zeroLiftAoA: -3

@@ -5,9 +5,6 @@ using UnityEngine;
 [CustomEditor(typeof(AerodynamicSurface)), CanEditMultipleObjects()]
 public class AeroSurfaceConfigEditor : Editor
 {
-    private SerializedProperty _position;
-    private SerializedProperty _rotation;
-    private SerializedProperty _scale;
     private SerializedProperty _liftSlope;
     private SerializedProperty _skinFriction;
     private SerializedProperty _zeroLiftAoA;
@@ -22,9 +19,6 @@ public class AeroSurfaceConfigEditor : Editor
 
     private void OnEnable()
     {
-        _position = serializedObject.FindProperty("position");
-        _rotation = serializedObject.FindProperty("rotation");
-        _scale = serializedObject.FindProperty("scale");
         _liftSlope = serializedObject.FindProperty("liftSlope");
         _skinFriction = serializedObject.FindProperty("skinFriction");
         _zeroLiftAoA = serializedObject.FindProperty("zeroLiftAoA");
@@ -41,9 +35,6 @@ public class AeroSurfaceConfigEditor : Editor
     public override void OnInspectorGUI()
     {
         serializedObject.Update();
-        EditorGUILayout.PropertyField(_position);
-        EditorGUILayout.PropertyField(_rotation);
-        EditorGUILayout.PropertyField(_scale);
         EditorGUILayout.PropertyField(_liftSlope);
         EditorGUILayout.PropertyField(_skinFriction);
         EditorGUILayout.PropertyField(_zeroLiftAoA);

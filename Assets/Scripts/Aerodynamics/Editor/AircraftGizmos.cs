@@ -41,18 +41,12 @@ public static class AircraftGizmos
         }
     }
 
-    public static void PrintColor(Color color)
-    {
-        Debug.Log("new Color(" + color.r.ToString("F3").Replace(',', '.') + "f, " + color.g.ToString("F3").Replace(',', '.') + "f, " + color.b.ToString("F3").Replace(',', '.') + "f, " + color.a.ToString("F3").Replace(',', '.') + "f);");
-    }
-
-
     [DrawGizmo(GizmoType.InSelectionHierarchy | GizmoType.NotInSelectionHierarchy | GizmoType.Pickable)]
     public static void SurfaceGizmos(AerodynamicSurfaceManager surf, GizmoType gizmoType)
     {
         AirplaneController ac = surf.GetComponentInParent<AirplaneController>();
         
-        if (surf.GetConfig() == null || ac == null)
+        if (surf.config == null || ac == null)
         {
             return;
         }
@@ -64,9 +58,9 @@ public static class AircraftGizmos
         {
             Gizmos.color = Color.clear;
             Gizmos.matrix = surf.transform.localToWorldMatrix;
-            Gizmos.DrawCube(-Vector3.right * 0.25f * surf.GetConfig().chord, new Vector3(surf.GetConfig().chord, 0.1f, surf.GetConfig().span));
+            Gizmos.DrawCube(-Vector3.right * 0.25f * surf.config.chord, new Vector3(surf.config.chord, 0.1f, surf.config.span));
 
-            DrawSurface(surf.transform, surf.GetConfig(), surf.GetFlapAngle(), surf.isAtStall);
+            DrawSurface(surf.transform, surf.config, surf.GetFlapAngle() * surf.inputMultiplier, surf.isAtStall);
         }
 
         if (settings.showForces)

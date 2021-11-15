@@ -74,8 +74,9 @@ public class PhysicsManager : MonoBehaviour
     {
         Quaternion inertiaTensorWorldRotation = _rb.rotation * _rb.inertiaTensorRotation;
         Vector3 torqueInDiagonalSpace = Quaternion.Inverse(inertiaTensorWorldRotation) * torque;
-        Vector3 angularVelocityChangeInDiagonalSpace = new Vector3(torqueInDiagonalSpace.x / _rb.inertiaTensor.x,
-            torqueInDiagonalSpace.y / _rb.inertiaTensor.y, torqueInDiagonalSpace.z / _rb.inertiaTensor.z);
+        Vector3 inertiaTensor = _rb.inertiaTensor;
+        Vector3 angularVelocityChangeInDiagonalSpace = new Vector3(torqueInDiagonalSpace.x / inertiaTensor.x,
+            torqueInDiagonalSpace.y / inertiaTensor.y, torqueInDiagonalSpace.z / inertiaTensor.z);
 
         return _rb.angularVelocity + delta * predictionTimeStepFraction
                                            * (inertiaTensorWorldRotation * angularVelocityChangeInDiagonalSpace);
