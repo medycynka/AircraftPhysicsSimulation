@@ -1,13 +1,13 @@
 ﻿#if UNITY_EDITOR
+using Aerodynamics.CoreScripts.EnvironmentUtilities;
 using UnityEngine;
 using UnityEditor;
-using Aerodynamics.CoreScripts;
 
 
 namespace Aerodynamics.Editor
 {
-    [CustomPropertyDrawer(typeof(AerodynamicSurface), true)]
-    public class AeroSurfaceConfigDrawer : PropertyDrawer
+    [CustomPropertyDrawer(typeof(AirRegion), true)]
+    public class ScriptableObjectsDrawer : PropertyDrawer
     {
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
@@ -86,7 +86,6 @@ namespace Aerodynamics.Editor
                     EditorGUI.indentLevel++;
                     ScriptableObject data = (ScriptableObject) property.objectReferenceValue;
                     SerializedObject serializedObject = new SerializedObject(data);
-                    var config = (AerodynamicSurface) property.objectReferenceValue;
                     SerializedProperty prop = serializedObject.GetIterator();
                     float y = position.y + EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
 
@@ -99,24 +98,9 @@ namespace Aerodynamics.Editor
                                 continue;
                             }
 
-                            if (prop.name == "aspectRatio" && config.autoAspectRatio)
-                            {
-                                GUI.enabled = false;
-                                float height =
-                                    EditorGUI.GetPropertyHeight(prop, new GUIContent(prop.displayName), true);
-                                EditorGUI.PropertyField(new Rect(position.x, y, position.width, height), prop, true);
-                                y += height + EditorGUIUtility.standardVerticalSpacing;
-                                GUI.enabled = true;
-                            }
-                            else
-                            {
-                                float height =
-                                    EditorGUI.GetPropertyHeight(prop, new GUIContent(prop.displayName), true);
-                                EditorGUI.PropertyField(new Rect(position.x, y, position.width, height), prop, true);
-                                y += height + EditorGUIUtility.standardVerticalSpacing;
-                            }
-
-
+                            float height = EditorGUI.GetPropertyHeight(prop, new GUIContent(prop.displayName), true);
+                            EditorGUI.PropertyField(new Rect(position.x, y, position.width, height), prop, true);
+                            y += height + EditorGUIUtility.standardVerticalSpacing;
                         } while (prop.NextVisible(false));
                     }
 
