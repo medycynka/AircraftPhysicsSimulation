@@ -10,11 +10,13 @@ namespace Aerodynamics.CoreScripts.EnvironmentUtilities
     {
         public AirRegion airRegion;
         public Transform regionTransform;
+        public BoxCollider collider;
         
         private string _airPlaneTag = "Player";
         private bool _isInside;
         private bool _insideReset = true;
         private PhysicsManager _physicsManager;
+        private Vector3 _center;
 
         private void OnValidate()
         {
@@ -23,9 +25,12 @@ namespace Aerodynamics.CoreScripts.EnvironmentUtilities
                 regionTransform = transform;
             }
 
-            if (airRegion != null && airRegion.regionCollider == null)
+            _center = regionTransform.position;
+
+            if (airRegion != null && collider == null)
             {
-                airRegion.regionCollider = GetComponent<BoxCollider>();
+                collider = GetComponent<BoxCollider>();
+                collider.size = airRegion.size;
             }
         }
 
@@ -33,9 +38,10 @@ namespace Aerodynamics.CoreScripts.EnvironmentUtilities
         {
             if (airRegion != null)
             {
-                airRegion.regionCollider = GetComponent<BoxCollider>();
-                airRegion.regionCollider.isTrigger = true;
+                collider = GetComponent<BoxCollider>();
+                collider.isTrigger = true;
             }
+            _center = regionTransform.position;
         }
 
         private void OnTriggerEnter(Collider other)
@@ -86,7 +92,7 @@ namespace Aerodynamics.CoreScripts.EnvironmentUtilities
         {
             if (airRegion)
             {
-                airRegion.DrawRegionBoundaries(regionTransform.position);
+                airRegion.DrawRegionBoundaries(_center);
             }
         }
     }
