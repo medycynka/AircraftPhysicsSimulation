@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6eb37a91fd4d4153a9a173416132c0e4, type: 3}
+  m_Name: AtmosphericRegion
+  m_EditorClassIdentifier: 
+  regionName: 
+  description: 
+  size: {x: 100, y: 100, z: 100}
+  airRegion: {fileID: 11400000, guid: 99426d81de160134f894516dd42a198c, type: 2}
+  windRegion: {fileID: 11400000, guid: bba8ed2d1a7288b41808782d17a42614, type: 2}

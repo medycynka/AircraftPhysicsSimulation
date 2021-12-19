@@ -8,6 +8,7 @@ namespace Aerodynamics.CoreScripts
     {
         [Range(1, 250)] public float thrust = 5;
         [Range(0, 5)] public float airDensity = 1.2f;
+        public Vector3 windVector = Vector3.zero;
         public List<AerodynamicSurfaceManager> aerodynamicSurfaces;
 
         private Rigidbody _rb;
@@ -32,14 +33,14 @@ namespace Aerodynamics.CoreScripts
         private void HandleCalculations(float delta)
         {
             PowerTorqueVector3 forceAndTorqueThisFrame = CalculateAerodynamicForces(_rb.velocity, _rb.angularVelocity,
-                Vector3.zero, airDensity, _rb.worldCenterOfMass);
+                windVector, airDensity, _rb.worldCenterOfMass);
             forceAndTorqueThisFrame.p +=
                 _airplaneTransform.forward * (_thrust * _thrustPercent) + Physics.gravity * _rb.mass;
 
             Vector3 velocityPrediction = PredictVelocity(forceAndTorqueThisFrame.p, delta);
             Vector3 angularVelocityPrediction = PredictAngularVelocity(forceAndTorqueThisFrame.q, delta);
             PowerTorqueVector3 forceAndTorquePrediction = CalculateAerodynamicForces(velocityPrediction,
-                angularVelocityPrediction, Vector3.zero, airDensity, _rb.worldCenterOfMass);
+                angularVelocityPrediction, windVector, airDensity, _rb.worldCenterOfMass);
 
             _currentForceAndTorque = (forceAndTorqueThisFrame + forceAndTorquePrediction) * 0.5f;
             _rb.AddForce(_currentForceAndTorque.p);
@@ -105,7 +106,7 @@ namespace Aerodynamics.CoreScripts
             {
                 com = GetComponent<Rigidbody>().worldCenterOfMass;
                 forceAndTorque = CalculateAerodynamicForces(-displayAirVelocity, Vector3.zero,
-                    Vector3.zero, displayAirDensity, com);
+                    windVector, displayAirDensity, com);
             }
             else
             {

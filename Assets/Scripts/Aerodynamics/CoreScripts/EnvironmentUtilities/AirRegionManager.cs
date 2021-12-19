@@ -5,16 +5,17 @@ using UnityEngine;
 
 namespace Aerodynamics.CoreScripts.EnvironmentUtilities
 {
-    [RequireComponent(typeof(BoxCollider))]
     public class AirRegionManager : MonoBehaviour
     {
-        public AirRegion airRegion;
+        public AtmosphericRegion atmosphericRegion;
         public Transform regionTransform;
-        public BoxCollider collider;
-        
+
+        private BoxCollider _collider;
         private string _airPlaneTag = "Player";
         private bool _isInside;
         private bool _insideReset = true;
+        private bool _useAirRegion;
+        private bool _useWindRegion;
         private PhysicsManager _physicsManager;
         private Vector3 _center;
 
@@ -26,42 +27,55 @@ namespace Aerodynamics.CoreScripts.EnvironmentUtilities
             }
 
             _center = regionTransform.position;
-
-            if (airRegion != null && collider == null)
-            {
-                collider = GetComponent<BoxCollider>();
-                collider.size = airRegion.size;
-            }
         }
 
         private void Awake()
         {
-            if (airRegion != null)
-            {
-                collider = GetComponent<BoxCollider>();
-                collider.isTrigger = true;
-            }
             _center = regionTransform.position;
+            
+            if (atmosphericRegion != null && (atmosphericRegion.airRegion != null || atmosphericRegion.windRegion != null))
+            {
+                _collider = gameObject.AddComponent<BoxCollider>();
+                _collider.isTrigger = true;
+                _collider.center = _center;
+                _collider.size = atmosphericRegion.size;
+            }
+
+            _useAirRegion = (atmosphericRegion && atmosphericRegion.airRegion);
+            _useWindRegion = (atmosphericRegion && atmosphericRegion.windRegion);
         }
 
         private void OnTriggerEnter(Collider other)
         {
-            if (other.CompareTag(_airPlaneTag))
+            if (_useAirRegion || _useWindRegion)
             {
-                _isInside = true;
-
-                if (_insideReset)
+                if (other.CompareTag(_airPlaneTag))
                 {
-                    if (_physicsManager == null)
-                    {
-                        _physicsManager = other.TryGetComponent(out PhysicsManager pm) ? pm : other.GetComponentInParent<PhysicsManager>();
+                    _isInside = true;
 
+                    if (_insideReset)
+                    {
                         if (_physicsManager == null)
                         {
-                            _physicsManager = other.GetComponentInChildren<PhysicsManager>();
-                        }
+                            _physicsManager = other.TryGetComponent(out PhysicsManager pm)
+                                ? pm
+                                : other.GetComponentInParent<PhysicsManager>();
 
-                        _physicsManager.airDensity = airRegion.CalculateAirDensity();
+                            if (_physicsManager == null)
+                            {
+                                _physicsManager = other.GetComponentInChildren<PhysicsManager>();
+                            }
+
+                            if (_useAirRegion)
+                            {
+                                _physicsManager.airDensity = atmosphericRegion.GetAirDensity();
+                            }
+
+                            if (_useWindRegion)
+                            {
+                                _physicsManager.windVector = atmosphericRegion.GetWind();
+                            }
+                        }
                     }
                 }
             }
@@ -90,9 +104,10 @@ namespace Aerodynamics.CoreScripts.EnvironmentUtilities
 
         private void OnDrawGizmosSelected()
         {
-            if (airRegion)
+            if (atmosphericRegion)
             {
-                airRegion.DrawRegionBoundaries(_center);
+                atmosphericRegion.DrawRegionBoundaries(_center);
+                atmosphericRegion.DrawRegionWindDirection(_center);
             }
         }
     }

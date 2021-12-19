@@ -4,23 +4,31 @@ using UnityEngine;
 
 namespace Aerodynamics.CoreScripts.EnvironmentUtilities
 {
-    [CreateAssetMenu(fileName = "WindRegion", menuName = "Aerodynamics/Environment/Wind Region", order = 0)]
+    public enum WindArrowDrawShape
+    {
+        Single,
+        Cube,
+        Sphere
+    }
+    
+    [CreateAssetMenu(fileName = "WindRegion", menuName = "Aerodynamics/Environment/Wind Region", order = 2)]
     public class WindRegion : ScriptableObject
     {
         [Header("Air Region", order = 0)] 
         [Header("Region air properties", order = 1)]
-        public string regionName;
-        [TextArea] public string description;
-        [Tooltip("Size of the region in 3D space.")] public Vector3 size;
         [Tooltip("Direction of the wind in current region.")] public Vector3 windDirection;
         [Tooltip("Power of the wind in current region.")] public float windPower;
 
         [Header("Draw properties", order = 1)]
         public Color regionArrowColor = new Color(1f, 1f, 1f, 1f);
-        [Range(1, 10)] public int regionArrowsCount = 1;
+        public WindArrowDrawShape regionArrowsDrawShape = WindArrowDrawShape.Single;
 
         private void OnValidate()
         {
+            if (windPower < 0)
+            {
+                windPower = 0;
+            }
             if (windDirection.x > 1)
             {
                 windDirection.x = 1;
@@ -44,6 +52,11 @@ namespace Aerodynamics.CoreScripts.EnvironmentUtilities
             if (windDirection.z < -1)
             {
                 windDirection.z = -1;
+            }
+
+            if (windDirection.sqrMagnitude > 1)
+            {
+                windDirection.Normalize();
             }
         }
 
