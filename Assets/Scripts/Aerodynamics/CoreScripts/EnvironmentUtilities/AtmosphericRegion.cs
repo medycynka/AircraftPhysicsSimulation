@@ -38,15 +38,14 @@ namespace Aerodynamics.CoreScripts.EnvironmentUtilities
         {
             if (windRegion)
             {
+                DrawArrow(center, center + windRegion.windDirection, windRegion.windPower, 
+                    windRegion.regionArrowColor);
+                
                 switch (windRegion.regionArrowsDrawShape)
                 {
                     case WindArrowDrawShape.Single:
-                        DrawArrow(center, center + windRegion.windDirection, windRegion.windPower, 
-                            windRegion.regionArrowColor);
                         break;
                     case WindArrowDrawShape.Cube:
-                        DrawArrow(center, center + windRegion.windDirection, windRegion.windPower, 
-                            windRegion.regionArrowColor);
                         foreach (Vector3 cubeVertex in GetCubeVertices(windRegion.windPower * 4))
                         {
                             DrawArrow(center + cubeVertex, center + cubeVertex + windRegion.windDirection, 
@@ -54,8 +53,7 @@ namespace Aerodynamics.CoreScripts.EnvironmentUtilities
                         }
                         break;
                     case WindArrowDrawShape.Sphere:
-                        DrawArrow(center, center + windRegion.windDirection, windRegion.windPower, 
-                            windRegion.regionArrowColor);
+                        
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
@@ -97,6 +95,14 @@ namespace Aerodynamics.CoreScripts.EnvironmentUtilities
                 new Vector3(-arrowSize * 0.5f, -arrowSize * 0.5f, arrowSize * 0.5f),
                 new Vector3(arrowSize * 0.5f, -arrowSize * 0.5f, arrowSize * 0.5f),
                 new Vector3(arrowSize * 0.5f, arrowSize * 0.5f, arrowSize * 0.5f)
+            };
+        }
+
+        private Vector3[] GetSphereVertices(float arrowSize)
+        {
+            return new[]
+            {
+                new Vector3()
             };
         }
     }

@@ -93,6 +93,8 @@ namespace Aerodynamics.CoreScripts
                 _thrustChanged = false;
             }
 
+            _physicsManager.HandleFixedUpdate(Time.fixedDeltaTime);
+
             if (Time.frameCount % 10 == 0 || _breakChanged)
             {
                 for (int i = 0; i < wheels.Count; i++)

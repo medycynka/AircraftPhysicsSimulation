@@ -25,10 +25,10 @@ namespace Aerodynamics.CoreScripts
             _airplaneTransform = transform;
         }
 
-        private void FixedUpdate()
-        {
-            HandleCalculations(Time.fixedDeltaTime);
-        }
+        // private void FixedUpdate()
+        // {
+        //     HandleCalculations(Time.fixedDeltaTime);
+        // }
 
         private void HandleCalculations(float delta)
         {
@@ -48,6 +48,11 @@ namespace Aerodynamics.CoreScripts
             _rb.AddForce(_airplaneTransform.forward * (_thrust * _thrustPercent));
         }
 
+        public void HandleFixedUpdate(float delta)
+        {
+            HandleCalculations(delta);
+        }
+        
         public void SetThrustPercent(float percent)
         {
             _thrustPercent = percent;
