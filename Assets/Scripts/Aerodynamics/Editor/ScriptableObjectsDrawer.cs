@@ -7,7 +7,7 @@ using UnityEditor;
 namespace Aerodynamics.Editor
 {
     [CustomPropertyDrawer(typeof(AirRegion), true)]
-    [CustomPropertyDrawer(typeof(WindRegion), true)]
+    [CustomPropertyDrawer(typeof(WindRegionVectorField), true)]
     [CustomPropertyDrawer(typeof(AtmosphericRegion), true)]
     public class ScriptableObjectsDrawer : PropertyDrawer
     {

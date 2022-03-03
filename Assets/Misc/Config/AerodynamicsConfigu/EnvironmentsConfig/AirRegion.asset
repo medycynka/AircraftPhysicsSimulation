@@ -12,14 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db5d105e04a245e0a743cfcbb765114d, type: 3}
   m_Name: AirRegion
   m_EditorClassIdentifier: 
-  regionName: 
-  description: 
-  size: {x: 100, y: 60, z: 100}
   temperature: 20
   humility: 0.1
   altitude: 0
   pressureAtSeaLevel: 100000
   seaLevel: 0
-  regionCollider: {fileID: 0}
   regionBorderColor: {r: 0, g: 0.14202714, b: 1, a: 1}
-  regionSidesColor: {r: 0, g: 1, b: 1, a: 0.49803922}
+  regionSidesColor: {r: 0, g: 1, b: 0.7891414, a: 0.12156863}

@@ -33,7 +33,7 @@ namespace Aerodynamics.CoreScripts.EnvironmentUtilities
         {
             _center = regionTransform.position;
             
-            if (atmosphericRegion != null && (atmosphericRegion.airRegion != null || atmosphericRegion.windRegion != null))
+            if (atmosphericRegion != null && (atmosphericRegion.airRegion != null || atmosphericRegion.windRegionVectorField != null))
             {
                 _collider = gameObject.AddComponent<BoxCollider>();
                 _collider.isTrigger = true;
@@ -42,7 +42,12 @@ namespace Aerodynamics.CoreScripts.EnvironmentUtilities
             }
 
             _useAirRegion = (atmosphericRegion && atmosphericRegion.airRegion);
-            _useWindRegion = (atmosphericRegion && atmosphericRegion.windRegion);
+            _useWindRegion = (atmosphericRegion && atmosphericRegion.windRegionVectorField);
+
+            if (_useWindRegion)
+            {
+                atmosphericRegion.windRegionVectorField.ForceInit(regionTransform.position);
+            }
         }
 
         private void OnTriggerEnter(Collider other)
@@ -73,7 +78,7 @@ namespace Aerodynamics.CoreScripts.EnvironmentUtilities
 
                             if (_useWindRegion)
                             {
-                                _physicsManager.windVector = atmosphericRegion.GetWind();
+                                _physicsManager.windVector = atmosphericRegion.GetWind(other.transform.position);
                             }
                         }
                     }
@@ -83,12 +88,13 @@ namespace Aerodynamics.CoreScripts.EnvironmentUtilities
         
         private void OnTriggerStay(Collider other)
         {
-            if (other.CompareTag(_airPlaneTag))
+            if (other.CompareTag(_airPlaneTag) && _physicsManager != null)
             {
-                if (_isInside && _insideReset)
-                {
-                    _insideReset = false;
-                }
+                // if (_isInside && _insideReset)
+                // {
+                //     _insideReset = false;
+                // }
+                _physicsManager.windVector = atmosphericRegion.GetWind(other.transform.position);
             }
         }
 
@@ -107,7 +113,7 @@ namespace Aerodynamics.CoreScripts.EnvironmentUtilities
             if (atmosphericRegion)
             {
                 atmosphericRegion.DrawRegionBoundaries(_center);
-                atmosphericRegion.DrawRegionWindDirection(_center);
+                atmosphericRegion.DrawRegionWindDirection();
             }
         }
     }
