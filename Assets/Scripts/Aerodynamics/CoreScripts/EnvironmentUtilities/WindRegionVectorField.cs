@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
 using UnityEditor;
 using UnityEngine;
 
@@ -19,12 +16,12 @@ namespace Aerodynamics.CoreScripts.EnvironmentUtilities
     public enum FunctionType
     {
         None,
-        Custom1,
-        Custom2,
-        Custom3,
-        Custom4,
-        Custom5,
-        Custom6
+        XYZ,
+        XZY,
+        ZXY,
+        mYmZX,
+        ABC,
+        PQR,
     }
     
     [CreateAssetMenu(fileName = "WindRegion", menuName = "Aerodynamics/Environment/Wind Region", order = 2)]
@@ -48,16 +45,20 @@ namespace Aerodynamics.CoreScripts.EnvironmentUtilities
         public bool initialized = false;
         
         [Header("Custom Parameters", order = 1)]
-        [SerializeField] private FunctionType p;
-        [SerializeField] private FunctionType q;
-        [SerializeField] private FunctionType r;
+        [SerializeField] private FunctionType functionType;
+        [SerializeField] private float a = 1f;
+        [SerializeField] private float b = Mathf.Sqrt(2f / 3f);
+        [SerializeField] private float c = Mathf.Sqrt(1f / 3f);
+        [SerializeField] private CustomFunctionBase p;
+        [SerializeField] private CustomFunctionBase q;
+        [SerializeField] private CustomFunctionBase r;
         
         [Header("Noise Parameters", order = 1)]
         [SerializeField] float seed = 1;
-        [SerializeField] float frequency = 0.1f;
+        [SerializeField, Range(-1f, 1f)] float frequency = 0.1f;
         [SerializeField] float amplitude = 4f;
         [SerializeField] float persistence = 1f;
-        [SerializeField] int octave = 1;
+        [SerializeField, Range(1, 64)] int octave = 1;
 
         [Header("Draw properties", order = 1)] 
         public bool drawSegments;
@@ -70,11 +71,16 @@ namespace Aerodynamics.CoreScripts.EnvironmentUtilities
         private void OnValidate()
         {
             direction.Normalize();
-            
+
             InitializeCoordinates000();
             InitializeVectors();
             
             initialized = true;
+        }
+
+        public void ValidateChildren()
+        {
+            OnValidate();
         }
 
         public void ForceInit(Vector3 initialPosition)
@@ -119,27 +125,19 @@ namespace Aerodynamics.CoreScripts.EnvironmentUtilities
             }
         }
 
-        private Func<int, int, int, float> GetFunction(FunctionType expression)
+        private Func<int, int, int, Vector3> GetFunction(FunctionType expression)
         {
-            switch (expression)
+            return expression switch
             {
-                case FunctionType.None:
-                    return (x, y, z) => 0;
-                case FunctionType.Custom1:
-                    return (x, y, z) => x * x * Mathf.Sin(y);
-                case FunctionType.Custom2:
-                    return (x, y, z) => Mathf.Sqrt(y * y + z) * Mathf.Exp((float)x / (y != 0 ? y : 1));
-                case FunctionType.Custom3:
-                    return (x, y, z) => Mathf.Log(x + y - z);
-                case FunctionType.Custom4:
-                    return (x, y, z) => 2f * x * y * z - y * Mathf.Cos(x * y);
-                case FunctionType.Custom5:
-                    return (x, y, z) => x * x * z - x * Mathf.Cos(x * y);
-                case FunctionType.Custom6:
-                    return (x, y, z) => x * x * y;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(expression), expression, null);
-            }
+                FunctionType.None => (x, y, z) => Vector3.up,
+                FunctionType.XYZ => (x, y, z) => new Vector3(x, y, z),
+                FunctionType.XZY => (x, y, z) => new Vector3(x, z, y),
+                FunctionType.ZXY => (x, y, z) => new Vector3(z, x, y),
+                FunctionType.mYmZX => (x, y, z) => new Vector3(-y, -z, x),
+                FunctionType.ABC => (x, y, z) => new Vector3(a * Mathf.Sin(z) + c * Mathf.Cos(y), b * Mathf.Sin(x) + a * Mathf.Cos(z), c * Mathf.Sin(y) + b * Mathf.Cos(x)),
+                FunctionType.PQR => (x, y, z) => Vector3.zero,
+                _ => throw new ArgumentOutOfRangeException(nameof(expression), expression, null)
+            };
         }
 
         private void InitializeVectorsDefault() 
@@ -178,18 +176,34 @@ namespace Aerodynamics.CoreScripts.EnvironmentUtilities
         private void InitializeVectorsCustom() 
         {
             vectors = new Vector3[cellsX, cellsY, cellsZ];
-            Func<int, int, int, float> customP = GetFunction(p);
-            Func<int, int, int, float> customQ = GetFunction(q);
-            Func<int, int, int, float> customR = GetFunction(r);
-
-            for (int x = 0; x < cellsX; x++)
+            
+            if (functionType == FunctionType.PQR)
             {
-                for (int y = 0; y < cellsY; y++)
+                for (int x = 0; x < cellsX; x++)
                 {
-                    for (int z = 0; z < cellsZ; z++)
+                    for (int y = 0; y < cellsY; y++)
                     {
-                        Vector3 noiseDirection = new Vector3(customP(x, y, z), customQ(x, y, z), customR(x, y, z));
-                        vectors[x, y, z] = noiseDirection.normalized;
+                        for (int z = 0; z < cellsZ; z++)
+                        {
+                            Vector3 noiseDirection = new Vector3(p.GetValue(x, y, z), q.GetValue(x, y, z), r.GetValue(x, y, z));
+                            vectors[x, y, z] = noiseDirection.normalized;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                Func<int, int, int, Vector3> func = GetFunction(functionType);
+
+                for (int x = 0; x < cellsX; x++)
+                {
+                    for (int y = 0; y < cellsY; y++)
+                    {
+                        for (int z = 0; z < cellsZ; z++)
+                        {
+                            Vector3 noiseDirection = func(x, y, z);
+                            vectors[x, y, z] = noiseDirection.normalized;
+                        }
                     }
                 }
             }

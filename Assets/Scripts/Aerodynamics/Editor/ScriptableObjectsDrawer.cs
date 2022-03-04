@@ -9,6 +9,7 @@ namespace Aerodynamics.Editor
     [CustomPropertyDrawer(typeof(AirRegion), true)]
     [CustomPropertyDrawer(typeof(WindRegionVectorField), true)]
     [CustomPropertyDrawer(typeof(AtmosphericRegion), true)]
+    [CustomPropertyDrawer(typeof(ScriptableObject), true)]
     public class ScriptableObjectsDrawer : PropertyDrawer
     {
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)

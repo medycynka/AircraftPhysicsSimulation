@@ -23,14 +23,18 @@ MonoBehaviour:
   coordinates000: {x: -51, y: 95, z: 55}
   topCoordinates000: {x: -56, y: 90, z: 50}
   initialized: 1
-  p: 1
-  q: 0
-  r: 0
-  seed: 1
+  functionType: 5
+  a: 1
+  b: 0.8164966
+  c: 0.57735026
+  p: {fileID: 11400000, guid: cd323cc6e60d1f8438229483a34623b5, type: 2}
+  q: {fileID: 11400000, guid: 0a06e884ea522af42863b3cfcc6cbad4, type: 2}
+  r: {fileID: 11400000, guid: 2cadcebe1126a6d44ade1480c6258550, type: 2}
+  seed: 5
   frequency: 0.1
-  amplitude: 4
-  persistence: 3.18
-  octave: 1
+  amplitude: 1
+  persistence: 1
+  octave: 2
   drawSegments: 0
   drawArrows: 1
   regionArrowColor: {r: 0, g: 0.06058979, b: 1, a: 1}

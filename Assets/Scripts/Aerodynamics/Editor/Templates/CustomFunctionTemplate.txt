@@ -1,0 +1,19 @@
+﻿using UnityEngine;
+
+
+namespace Aerodynamics.CoreScripts.EnvironmentUtilities
+{
+    [CreateAssetMenu(fileName = "#RUNTIMENAME#", menuName = "Aerodynamics/Environment/#RUNTIMENAME_WITH_SPACES#")]
+    public class #SCRIPTNAME# : CustomFunctionBase
+    {
+        private void OnValidate()
+        {
+            validationCallback?.Invoke();
+        }
+                
+        public override float GetValue(int x, int y, int z)
+        {
+            return 0f;
+        }
+    }
+}
