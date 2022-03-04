@@ -1,27 +1,56 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
 using UnityEditor;
 using UnityEngine;
 
 
 namespace Aerodynamics.CoreScripts.EnvironmentUtilities
 {
+    public enum WindFlowType
+    {
+        Default,
+        Spiral,
+        Custom,
+        PerlinNoise
+    }
+
+    public enum FunctionType
+    {
+        None,
+        Custom1,
+        Custom2,
+        Custom3,
+        Custom4,
+        Custom5,
+        Custom6
+    }
+    
     [CreateAssetMenu(fileName = "WindRegion", menuName = "Aerodynamics/Environment/Wind Region", order = 2)]
     public class WindRegionVectorField : ScriptableObject
     {
-        [Header("Air Region", order = 0)] 
-        [Header("Region air properties", order = 1)]
+        [Header("Wind Region", order = 0)] 
+        [Header("Wind Region properties", order = 1)]
         public float cellSize = 1f;
         public int cellsX = 5;
         public int cellsY = 5;
         public int cellsZ = 5;
         public float force = 1f;
+        public WindFlowType flowType = WindFlowType.PerlinNoise;
 
         [Header("Initial Vector Field Position", order = 1)]
         public Vector3 position;
+        public Vector3 direction;
         public Vector3 coordinates000;
         public Vector3 topCoordinates000;
         public Vector3[,,] vectors;
         public bool initialized = false;
+        
+        [Header("Custom Parameters", order = 1)]
+        [SerializeField] private FunctionType p;
+        [SerializeField] private FunctionType q;
+        [SerializeField] private FunctionType r;
         
         [Header("Noise Parameters", order = 1)]
         [SerializeField] float seed = 1;
@@ -40,6 +69,8 @@ namespace Aerodynamics.CoreScripts.EnvironmentUtilities
 
         private void OnValidate()
         {
+            direction.Normalize();
+            
             InitializeCoordinates000();
             InitializeVectors();
             
@@ -66,8 +97,105 @@ namespace Aerodynamics.CoreScripts.EnvironmentUtilities
                 initialized = true;
             }
         }
+
+        private void InitializeVectors()
+        {
+            switch (flowType)
+            {
+                case WindFlowType.Default:
+                    InitializeVectorsDefault();
+                    break;
+                case WindFlowType.Spiral:
+                    InitializeVectorsSpiral();
+                    break;
+                case WindFlowType.Custom:
+                    InitializeVectorsCustom();
+                    break;
+                case WindFlowType.PerlinNoise:
+                    InitializeVectorsPerlin();
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        private Func<int, int, int, float> GetFunction(FunctionType expression)
+        {
+            switch (expression)
+            {
+                case FunctionType.None:
+                    return (x, y, z) => 0;
+                case FunctionType.Custom1:
+                    return (x, y, z) => x * x * Mathf.Sin(y);
+                case FunctionType.Custom2:
+                    return (x, y, z) => Mathf.Sqrt(y * y + z) * Mathf.Exp((float)x / (y != 0 ? y : 1));
+                case FunctionType.Custom3:
+                    return (x, y, z) => Mathf.Log(x + y - z);
+                case FunctionType.Custom4:
+                    return (x, y, z) => 2f * x * y * z - y * Mathf.Cos(x * y);
+                case FunctionType.Custom5:
+                    return (x, y, z) => x * x * z - x * Mathf.Cos(x * y);
+                case FunctionType.Custom6:
+                    return (x, y, z) => x * x * y;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(expression), expression, null);
+            }
+        }
+
+        private void InitializeVectorsDefault() 
+        {
+            vectors = new Vector3[cellsX, cellsY, cellsZ];
+
+            for (int x = 0; x < cellsX; x++)
+            {
+                for (int y = 0; y < cellsY; y++)
+                {
+                    for (int z = 0; z < cellsZ; z++)
+                    {
+                        vectors[x, y, z] = direction;
+                    }
+                }
+            }
+        }
         
-        private void InitializeVectors() 
+        private void InitializeVectorsSpiral() 
+        {
+            vectors = new Vector3[cellsX, cellsY, cellsZ];
+
+            for (int x = 0; x < cellsX; x++)
+            {
+                for (int y = 0; y < cellsY; y++)
+                {
+                    for (int z = 0; z < cellsZ; z++)
+                    {
+                        Vector3 noiseDirection = new Vector3(z - x, 0, -z - x);
+                        vectors[x, y, z] = noiseDirection.normalized;
+                    }
+                }
+            }
+        }
+
+        private void InitializeVectorsCustom() 
+        {
+            vectors = new Vector3[cellsX, cellsY, cellsZ];
+            Func<int, int, int, float> customP = GetFunction(p);
+            Func<int, int, int, float> customQ = GetFunction(q);
+            Func<int, int, int, float> customR = GetFunction(r);
+
+            for (int x = 0; x < cellsX; x++)
+            {
+                for (int y = 0; y < cellsY; y++)
+                {
+                    for (int z = 0; z < cellsZ; z++)
+                    {
+                        Vector3 noiseDirection = new Vector3(customP(x, y, z), customQ(x, y, z), customR(x, y, z));
+                        vectors[x, y, z] = noiseDirection.normalized;
+                    }
+                }
+            }
+        }
+        
+        private void InitializeVectorsPerlin() 
         {
             vectors = new Vector3[cellsX, cellsY, cellsZ];
 
@@ -80,14 +208,13 @@ namespace Aerodynamics.CoreScripts.EnvironmentUtilities
                         float noise = PerlinNoise3D.GetValue(x, y, z, seed, frequency, amplitude, persistence, octave);
                         float noisePI = noise * Mathf.PI;
                         Vector3 noiseDirection = new Vector3(Mathf.Cos(noisePI), Mathf.Sin(noisePI), Mathf.Cos(noisePI));
-                        // Debug.Log($"[{x}, {y}, {z}] : {noiseDirection.normalized}");
                         vectors[x, y, z] = noiseDirection.normalized;
                     }
                 }
             }
         }
 
-        public void InitializeCoordinates000()
+        private void InitializeCoordinates000()
         {
             float x0 = (cellsX / 2f) * cellSize;
             float y0 = (cellsY / 2f) * cellSize;
