@@ -17,10 +17,15 @@ MonoBehaviour:
   cellsY: 10
   cellsZ: 10
   force: 1
+  flowType: 3
   position: {x: -6, y: 140, z: 100}
+  direction: {x: 0.14868736, y: 0.33482528, z: -0.9304752}
   coordinates000: {x: -51, y: 95, z: 55}
   topCoordinates000: {x: -56, y: 90, z: 50}
   initialized: 1
+  p: 1
+  q: 0
+  r: 0
   seed: 1
   frequency: 0.1
   amplitude: 4
