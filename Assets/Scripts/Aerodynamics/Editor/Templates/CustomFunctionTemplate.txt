@@ -13,6 +13,11 @@ namespace Aerodynamics.CoreScripts.EnvironmentUtilities
                 
         public override float GetValue(int x, int y, int z)
         {
+            if (outerArgument != null)
+            {
+                return outerArgument.GetValue(x, y, z);
+            }
+                        
             return 0f;
         }
     }

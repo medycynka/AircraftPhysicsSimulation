@@ -7,6 +7,7 @@ namespace Aerodynamics.CoreScripts.EnvironmentUtilities
 {
     public class CustomFunctionBase : ScriptableObject
     {
+        public CustomFunctionBase outerArgument;
         public UnityEvent validationCallback;
         
         private void OnValidate()

@@ -38,6 +38,7 @@ namespace Aerodynamics.CoreScripts.EnvironmentUtilities
 
         [Header("Initial Vector Field Position", order = 1)]
         public Vector3 position;
+        public Vector3Int offset;
         public Vector3 direction;
         public Vector3 coordinates000;
         public Vector3 topCoordinates000;
@@ -166,7 +167,11 @@ namespace Aerodynamics.CoreScripts.EnvironmentUtilities
                 {
                     for (int z = 0; z < cellsZ; z++)
                     {
-                        Vector3 noiseDirection = new Vector3(z - x, 0, -z - x);
+                        int xOff = x + offset.x;
+                        int yOff = y + offset.y;
+                        int zOff = z + offset.z;
+                        
+                        Vector3 noiseDirection = new Vector3(zOff - xOff, 0, -zOff - xOff);
                         vectors[x, y, z] = noiseDirection.normalized;
                     }
                 }
@@ -185,7 +190,15 @@ namespace Aerodynamics.CoreScripts.EnvironmentUtilities
                     {
                         for (int z = 0; z < cellsZ; z++)
                         {
-                            Vector3 noiseDirection = new Vector3(p.GetValue(x, y, z), q.GetValue(x, y, z), r.GetValue(x, y, z));
+                            int xOff = x + offset.x;
+                            int yOff = y + offset.y;
+                            int zOff = z + offset.z;
+                            
+                            Vector3 noiseDirection = new Vector3(
+                                p.GetValue(xOff, yOff, zOff), 
+                                q.GetValue(xOff, yOff, zOff), 
+                                r.GetValue(xOff, yOff, zOff)
+                                );
                             vectors[x, y, z] = noiseDirection.normalized;
                         }
                     }
@@ -201,7 +214,11 @@ namespace Aerodynamics.CoreScripts.EnvironmentUtilities
                     {
                         for (int z = 0; z < cellsZ; z++)
                         {
-                            Vector3 noiseDirection = func(x, y, z);
+                            int xOff = x + offset.x;
+                            int yOff = y + offset.y;
+                            int zOff = z + offset.z;
+                            
+                            Vector3 noiseDirection = func(xOff, yOff, zOff);
                             vectors[x, y, z] = noiseDirection.normalized;
                         }
                     }
@@ -219,9 +236,13 @@ namespace Aerodynamics.CoreScripts.EnvironmentUtilities
                 {
                     for (int z = 0; z < cellsZ; z++)
                     {
-                        float noise = PerlinNoise3D.GetValue(x, y, z, seed, frequency, amplitude, persistence, octave);
+                        int xOff = x + offset.x;
+                        int yOff = y + offset.y;
+                        int zOff = z + offset.z;
+                        float noise = PerlinNoise3D.GetValue(xOff, yOff, zOff, seed, frequency, amplitude, persistence, octave);
                         float noisePI = noise * Mathf.PI;
                         Vector3 noiseDirection = new Vector3(Mathf.Cos(noisePI), Mathf.Sin(noisePI), Mathf.Cos(noisePI));
+                        
                         vectors[x, y, z] = noiseDirection.normalized;
                     }
                 }

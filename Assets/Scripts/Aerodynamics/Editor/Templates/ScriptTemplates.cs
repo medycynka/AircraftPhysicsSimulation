@@ -15,7 +15,7 @@ namespace Aerodynamics.Editor.Templates
 		public static void CreateFunctionScript() =>
 			ProjectWindowUtil.StartNameEditingIfProjectWindowExists(0,
 				ScriptableObject.CreateInstance<DoCreateFunctionAsset>(),
-				"NewFunctionSO.cs",
+				"NewFunctionCf.cs",
 				(Texture2D) EditorGUIUtility.IconContent("cs Script Icon").image,
 				$"{_path}/CustomFunctionTemplate.txt");
 
@@ -28,9 +28,9 @@ namespace Aerodynamics.Editor.Templates
 				string fileName = Path.GetFileName(pathName);
 				{
 					string newName = fileName.Replace(" ", "");
-					if (!newName.Contains("SO"))
+					if (!newName.Contains("Cf"))
 					{
-						newName = newName.Insert(fileName.Length - 3, "SO");
+						newName = newName.Insert(fileName.Length - 3, "Cf");
 					}
 
 					pathName = pathName.Replace(fileName, newName);
@@ -40,7 +40,7 @@ namespace Aerodynamics.Editor.Templates
 				string fileNameWithoutExtension = fileName.Substring(0, fileName.Length - 3);
 				text = text.Replace("#SCRIPTNAME#", fileNameWithoutExtension);
 
-				string runtimeName = fileNameWithoutExtension.Replace("SO", "");
+				string runtimeName = fileNameWithoutExtension.Replace("Cf", "");
 				text = text.Replace("#RUNTIMENAME#", runtimeName);
 
 				for (int i = runtimeName.Length - 1; i > 0; i--)
