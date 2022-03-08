@@ -16,7 +16,7 @@ namespace Aerodynamics.CoreScripts.EnvironmentUtilities
                 
         public override float GetValue(int x, int y, int z)
         {
-            if (outerArgument != null)
+            if (outerArgument != null && arg == SingleArg.C)
             {
                 return Mathf.Abs(outerArgument.GetValue(x, y, z));
             }
@@ -24,11 +24,11 @@ namespace Aerodynamics.CoreScripts.EnvironmentUtilities
             switch (arg)
             {
                 case (SingleArg.X):
-                    return Mathf.Abs(x);;
+                    return Mathf.Abs(x);
                 case (SingleArg.Y):
-                    return Mathf.Abs(y);;
+                    return Mathf.Abs(y);
                 case (SingleArg.Z):
-                    return Mathf.Abs(z);;
+                    return Mathf.Abs(z);
                 default:
                     throw new ArgumentOutOfRangeException();
             }

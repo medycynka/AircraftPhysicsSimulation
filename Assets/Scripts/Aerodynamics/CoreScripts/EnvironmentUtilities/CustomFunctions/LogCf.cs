@@ -18,7 +18,7 @@ namespace Aerodynamics.CoreScripts.EnvironmentUtilities
                 
         public override float GetValue(int x, int y, int z)
         {
-            if (outerArgument != null)
+            if (outerArgument != null && arg == SingleArg.C)
             {
                 return logBase switch
                 {
