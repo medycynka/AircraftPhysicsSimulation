@@ -19,12 +19,12 @@ MonoBehaviour:
   force: 1
   flowType: 1
   position: {x: -6, y: 140, z: 100}
-  offset: {x: 0, y: 0, z: 0}
+  offset: {x: -5, y: -5, z: -5}
   direction: {x: 0.14868736, y: 0.33482528, z: -0.9304752}
   coordinates000: {x: -51, y: 95, z: 55}
   topCoordinates000: {x: -56, y: 90, z: 50}
   initialized: 1
-  functionType: 5
+  functionType: 4
   a: 1
   b: 0.8164966
   c: 0.57735026
@@ -39,6 +39,6 @@ MonoBehaviour:
   drawSegments: 0
   drawArrows: 1
   regionArrowColor: {r: 0, g: 0.06058979, b: 1, a: 1}
-  regionSegmentColor: {r: 1, g: 1, b: 0, a: 1}
+  regionSegmentColor: {r: 0.6554132, g: 0.6886792, b: 0, a: 1}
   topSegmentColor1: {r: 1, g: 0, b: 0, a: 1}
-  topSegmentColor2: {r: 1, g: 1, b: 1, a: 1}
+  topSegmentColor2: {r: 1, g: 0.5424528, b: 0.5424528, a: 1}

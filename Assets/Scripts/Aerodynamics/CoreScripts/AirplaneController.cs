@@ -27,6 +27,7 @@ namespace Aerodynamics.CoreScripts
         [Range(0, 0.3f)] public float flapIncrementPower = 0.15f;
         public int flapMaxIncrementAmount = 3;
         public TextMeshProUGUI displayText;
+        public PositionTracker positionTracker;
 
         private float _thrustPercent;
         private float _brakesTorque;
@@ -81,6 +82,11 @@ namespace Aerodynamics.CoreScripts
             HandleRotations(Time.deltaTime);
 
             UpdateVisibleTextValue();
+
+            if (positionTracker != null)
+            {
+                positionTracker.MeasurePosition();
+            }
         }
 
         private void FixedUpdate()
@@ -260,7 +266,7 @@ namespace Aerodynamics.CoreScripts
 
         private void UpdateVisibleTextValue()
         {
-            displayText.text = "Velocity: " + ((int) _rb.velocity.magnitude).ToString("D3") + " m/s\n" +
+            displayText.text = "Velocity: " + ((int) _rb.velocity.magnitude * 2).ToString("D3") + " m/s\n" +
                                "Height: " + ((int) transform.position.y).ToString("D4") + " m\n" +
                                "Trust: " + (int) (_thrustPercent * 100) + "%\n" +
                                (_brakesTorque > 0 ? "Breaks: ON" : "Breaks: OFF");

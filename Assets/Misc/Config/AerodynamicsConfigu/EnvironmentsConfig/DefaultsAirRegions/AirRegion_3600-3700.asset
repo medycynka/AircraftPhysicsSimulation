@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: db5d105e04a245e0a743cfcbb765114d, type: 3}
+  m_Name: AirRegion_3600-3700
+  m_EditorClassIdentifier: 
+  temperature: -1.6000007
+  humility: 0
+  altitude: 3600
+  pressureAtSeaLevel: 100000
+  seaLevel: 0
+  regionBorderColor: {r: 0, g: 0, b: 1, a: 1}
+  regionSidesColor: {r: 0, g: 1, b: 0.7882353, a: 0.12156863}

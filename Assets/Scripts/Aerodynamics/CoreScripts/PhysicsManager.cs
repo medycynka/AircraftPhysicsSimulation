@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using Aerodynamics.CoreScripts.EnvironmentUtilities;
+using UnityEditor;
 using UnityEngine;
 
 
@@ -8,9 +10,12 @@ namespace Aerodynamics.CoreScripts
     {
         [Range(1, 250)] public float thrust = 5;
         [Range(0, 5)] public float airDensity = 1.2f;
+        public float currentTemperature = 20f;
         public Vector3 windVector = Vector3.zero;
         public List<AerodynamicSurfaceManager> aerodynamicSurfaces;
 
+        public Rigidbody rb => _rb;
+        
         private Rigidbody _rb;
         private Transform _airplaneTransform;
         private float _thrust;
@@ -23,19 +28,23 @@ namespace Aerodynamics.CoreScripts
             _rb = GetComponent<Rigidbody>();
             _thrust = thrust * 1000f;
             _airplaneTransform = transform;
-        }
 
-        // private void FixedUpdate()
-        // {
-        //     HandleCalculations(Time.fixedDeltaTime);
-        // }
+            /*for (int i = 0; i < 120; i++)
+            {
+                AirRegion newSo = ScriptableObject.CreateInstance<AirRegion>();
+                newSo.name = $"AirRegion_{i * 100}-{(i + 1) * 100}";
+                newSo.altitude = i * 100;
+                newSo.temperature = 20.0f - i * 0.6f;
+                AssetDatabase.CreateAsset(newSo, $"Assets/Misc/Config/AerodynamicsConfigu/EnvironmentsConfig/DefaultsAirRegions/{newSo.name}.asset");
+            }*/
+        }
 
         private void HandleCalculations(float delta)
         {
             PowerTorqueVector3 forceAndTorqueThisFrame = CalculateAerodynamicForces(_rb.velocity, _rb.angularVelocity,
                 windVector, airDensity, _rb.worldCenterOfMass);
             forceAndTorqueThisFrame.p +=
-                _airplaneTransform.forward * (_thrust * _thrustPercent) + Physics.gravity * _rb.mass;
+                _airplaneTransform.forward * (_thrust * _thrustPercent * 0.5f) + Physics.gravity * _rb.mass;
 
             Vector3 velocityPrediction = PredictVelocity(forceAndTorqueThisFrame.p, delta);
             Vector3 angularVelocityPrediction = PredictAngularVelocity(forceAndTorqueThisFrame.q, delta);
@@ -45,7 +54,7 @@ namespace Aerodynamics.CoreScripts
             _currentForceAndTorque = (forceAndTorqueThisFrame + forceAndTorquePrediction) * 0.5f;
             _rb.AddForce(_currentForceAndTorque.p);
             _rb.AddTorque(_currentForceAndTorque.q);
-            _rb.AddForce(_airplaneTransform.forward * (_thrust * _thrustPercent));
+            _rb.AddForce(_airplaneTransform.forward * (_thrust * _thrustPercent * 0.5f));
         }
 
         public void HandleFixedUpdate(float delta)

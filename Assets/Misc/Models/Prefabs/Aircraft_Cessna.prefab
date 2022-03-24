@@ -732,6 +732,7 @@ GameObject:
   - component: {fileID: 2586133614152267358}
   - component: {fileID: 2586133614152267359}
   - component: {fileID: 2586133614152267356}
+  - component: {fileID: 7160637148837802967}
   m_Layer: 0
   m_Name: Aircraft_Cessna
   m_TagString: Untagged
@@ -786,8 +787,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a82a38eccd42dea468bf6634fdcf8e65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  thrust: 5
+  thrust: 3
   airDensity: 1.2
+  currentTemperature: 20
+  windVector: {x: 0, y: 0, z: 0}
   aerodynamicSurfaces:
   - {fileID: 2586133613495421790}
   - {fileID: 2586133613710118146}
@@ -824,6 +827,7 @@ MonoBehaviour:
   - {fileID: 2586133613643093354}
   detachableParts: []
   randomDetach: 0
+  rotators: []
   airplaneMass: 1000
   rollControlSensitivity: 0.15
   pitchControlSensitivity: 0.25
@@ -835,6 +839,25 @@ MonoBehaviour:
   flapIncrementPower: 0.15
   flapMaxIncrementAmount: 3
   displayText: {fileID: 0}
+  positionTracker: {fileID: 7160637148837802967}
+--- !u!114 &7160637148837802967
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2586133614152267352}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d44edb6311aa49749ebf66cbf7103a65, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  frameRateStep: 60
+  maxMeasurementCount: 100
+  objectTransform: {fileID: 2586133614152267353}
+  physicsManager: {fileID: 2586133614152267359}
+  tempChart: {fileID: 0}
+  positionChart: {fileID: 0}
 --- !u!1 &2586133614182212724
 GameObject:
   m_ObjectHideFlags: 0

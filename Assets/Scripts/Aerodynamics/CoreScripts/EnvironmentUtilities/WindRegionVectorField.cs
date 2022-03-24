@@ -274,10 +274,8 @@ namespace Aerodynamics.CoreScripts.EnvironmentUtilities
             {
                 return new Vector3Int(-1, -1, -1);
             } 
-            else
-            {
-                return vectorIndex;
-            }
+            
+            return vectorIndex;
         }
 
         private Vector3 VectorValueInWorldCoordinates(Vector3 worldCoordinates)
@@ -288,10 +286,8 @@ namespace Aerodynamics.CoreScripts.EnvironmentUtilities
             {
                 return Vector3.zero;
             } 
-            else
-            {
-                return vectors[vectorIndex.x, vectorIndex.y, vectorIndex.z];
-            }
+            
+            return vectors[vectorIndex.x, vectorIndex.y, vectorIndex.z];
         }
 
         public Vector3 GetWindVector(Vector3 worldCoordinates)

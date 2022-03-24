@@ -17,5 +17,5 @@ MonoBehaviour:
   altitude: 0
   pressureAtSeaLevel: 100000
   seaLevel: 0
-  regionBorderColor: {r: 0, g: 0.14202714, b: 1, a: 1}
+  regionBorderColor: {r: 0, g: 0, b: 1, a: 1}
   regionSidesColor: {r: 0, g: 1, b: 0.7891414, a: 0.12156863}
