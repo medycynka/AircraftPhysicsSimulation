@@ -44,7 +44,7 @@ namespace Aerodynamics.CoreScripts
             PowerTorqueVector3 forceAndTorqueThisFrame = CalculateAerodynamicForces(_rb.velocity, _rb.angularVelocity,
                 windVector, airDensity, _rb.worldCenterOfMass);
             forceAndTorqueThisFrame.p +=
-                _airplaneTransform.forward * (_thrust * _thrustPercent * 0.5f) + Physics.gravity * _rb.mass;
+                _airplaneTransform.forward * (_thrust * _thrustPercent) + Physics.gravity * _rb.mass;
 
             Vector3 velocityPrediction = PredictVelocity(forceAndTorqueThisFrame.p, delta);
             Vector3 angularVelocityPrediction = PredictAngularVelocity(forceAndTorqueThisFrame.q, delta);
@@ -54,7 +54,7 @@ namespace Aerodynamics.CoreScripts
             _currentForceAndTorque = (forceAndTorqueThisFrame + forceAndTorquePrediction) * 0.5f;
             _rb.AddForce(_currentForceAndTorque.p);
             _rb.AddTorque(_currentForceAndTorque.q);
-            _rb.AddForce(_airplaneTransform.forward * (_thrust * _thrustPercent * 0.5f));
+            _rb.AddForce(_airplaneTransform.forward * (_thrust * _thrustPercent));
         }
 
         public void HandleFixedUpdate(float delta)
