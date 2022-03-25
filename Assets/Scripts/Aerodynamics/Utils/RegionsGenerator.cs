@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Aerodynamics.CoreScripts;
 using Aerodynamics.CoreScripts.EnvironmentUtilities;
 using UnityEngine;
 
@@ -23,6 +24,8 @@ namespace Aerodynamics.Utils
         public List<ScriptableObject> regions;
 
         [SerializeField] private List<GameObject> _children = new List<GameObject>();
+        // [SerializeField] private Transform _self;
+        // [SerializeField] private Transform _player;
 
         private void OnValidate()
         {
@@ -35,6 +38,25 @@ namespace Aerodynamics.Utils
                 }
             }
         }
+
+        // private void Awake()
+        // {
+        //     _self = transform;
+        //     _player = FindObjectOfType<PhysicsManager>().gameObject.transform;
+        // }
+        //
+        // private void Update()
+        // {
+        //     if (Time.frameCount % 60 == 0)
+        //     {
+        //         Vector2 currDist = new Vector2(_self.position.x - _player.position.x, _self.position.z - _player.position.z);
+        //
+        //         if (currDist.sqrMagnitude > 10000)
+        //         {
+        //             _self.position = new Vector3(_player.position.x, _self.position.y, _player.position.z);
+        //         }
+        //     }
+        // }
 
         public void GenerateRegions()
         {

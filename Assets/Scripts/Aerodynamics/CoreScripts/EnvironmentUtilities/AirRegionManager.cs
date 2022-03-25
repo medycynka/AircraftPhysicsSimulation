@@ -12,8 +12,6 @@ namespace Aerodynamics.CoreScripts.EnvironmentUtilities
 
         private BoxCollider _collider;
         private string _airPlaneTag = "Player";
-        private bool _isInside;
-        private bool _insideReset = true;
         private bool _useAirRegion;
         private bool _useWindRegion;
         private PhysicsManager _physicsManager;
@@ -41,8 +39,8 @@ namespace Aerodynamics.CoreScripts.EnvironmentUtilities
                 _collider.size = atmosphericRegion.size;
             }
 
-            _useAirRegion = (atmosphericRegion && atmosphericRegion.airRegion);
-            _useWindRegion = (atmosphericRegion && atmosphericRegion.windRegionVectorField);
+            _useAirRegion = (atmosphericRegion != null && atmosphericRegion.airRegion);
+            _useWindRegion = (atmosphericRegion != null && atmosphericRegion.windRegionVectorField);
 
             if (_useWindRegion)
             {
@@ -56,30 +54,25 @@ namespace Aerodynamics.CoreScripts.EnvironmentUtilities
             {
                 if (other.CompareTag(_airPlaneTag))
                 {
-                    _isInside = true;
-
-                    if (_insideReset)
+                    if (_physicsManager == null)
                     {
+                        _physicsManager = other.TryGetComponent(out PhysicsManager pm)
+                            ? pm
+                            : other.GetComponentInParent<PhysicsManager>();
+
                         if (_physicsManager == null)
                         {
-                            _physicsManager = other.TryGetComponent(out PhysicsManager pm)
-                                ? pm
-                                : other.GetComponentInParent<PhysicsManager>();
+                            _physicsManager = other.GetComponentInChildren<PhysicsManager>();
+                        }
 
-                            if (_physicsManager == null)
-                            {
-                                _physicsManager = other.GetComponentInChildren<PhysicsManager>();
-                            }
+                        if (_useAirRegion)
+                        {
+                            _physicsManager.airDensity = atmosphericRegion.GetAirDensity();
+                        }
 
-                            if (_useAirRegion)
-                            {
-                                _physicsManager.airDensity = atmosphericRegion.GetAirDensity();
-                            }
-
-                            if (_useWindRegion)
-                            {
-                                _physicsManager.windVector = atmosphericRegion.GetWind(other.transform.position);
-                            }
+                        if (_useWindRegion)
+                        {
+                            _physicsManager.windVector = atmosphericRegion.GetWind(other.transform.position);
                         }
                     }
                 }
@@ -90,10 +83,6 @@ namespace Aerodynamics.CoreScripts.EnvironmentUtilities
         {
             if (other.CompareTag(_airPlaneTag) && _physicsManager != null)
             {
-                // if (_isInside && _insideReset)
-                // {
-                //     _insideReset = false;
-                // }
                 _physicsManager.windVector = atmosphericRegion.GetWind(other.transform.position);
             }
         }
@@ -102,9 +91,7 @@ namespace Aerodynamics.CoreScripts.EnvironmentUtilities
         {
             if (other.CompareTag(_airPlaneTag))
             {
-                _physicsManager = null;
-                _isInside = false;
-                _insideReset = true;
+                _physicsManager.windVector = Vector3.zero;
             }
         }
 

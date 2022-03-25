@@ -145,6 +145,11 @@ namespace Aerodynamics.CoreScripts.EnvironmentUtilities
         {
             vectors = new Vector3[cellsX, cellsY, cellsZ];
 
+            if (direction == Vector3.zero)
+            {
+                direction = Vector3.forward;
+            }
+
             for (int x = 0; x < cellsX; x++)
             {
                 for (int y = 0; y < cellsY; y++)

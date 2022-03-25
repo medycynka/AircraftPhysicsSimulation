@@ -1,13 +1,11 @@
-﻿using System;
-using UnityEditor;
-using UnityEngine;
+﻿using UnityEngine;
 
 
 namespace Aerodynamics.CoreScripts.EnvironmentUtilities
 {
-    public class TemperatureRegionManager : MonoBehaviour
+    public class WindRegionManager : MonoBehaviour
     {
-        public AirRegion airRegion;
+        public WindRegionVectorField windRegion;
         public Transform regionTransform;
 
         private BoxCollider _collider;
@@ -28,12 +26,13 @@ namespace Aerodynamics.CoreScripts.EnvironmentUtilities
         private void Awake()
         {
             _center = regionTransform.position;
-            
-            if (airRegion != null && _collider == null)
+
+            if (windRegion)
             {
-                _collider = gameObject.AddComponent<BoxCollider>();
-                _collider.isTrigger = true;
-                _collider.center = _center;
+                if (windRegion != null)
+                {
+                    windRegion.ForceInit(_center);
+                }
             }
         }
 
@@ -53,34 +52,31 @@ namespace Aerodynamics.CoreScripts.EnvironmentUtilities
                     }
                 }
                 
-                _physicsManager.airDensity = airRegion.CalculateAirDensity();
-                _physicsManager.currentTemperature = airRegion.temperature;
+                _physicsManager.windVector = windRegion.GetWindVector(other.transform.position);
+            }
+        }
+        
+        private void OnTriggerStay(Collider other)
+        {
+            if (other.CompareTag(_airPlaneTag) && _physicsManager != null)
+            {
+                _physicsManager.windVector = windRegion.GetWindVector(other.transform.position);
             }
         }
 
-        // private void OnTriggerExit(Collider other)
-        // {
-        //     if (other.CompareTag(_airPlaneTag))
-        //     {
-        //         
-        //     }
-        // }
+        private void OnTriggerExit(Collider other)
+        {
+            if (other.CompareTag(_airPlaneTag))
+            {
+                _physicsManager.windVector = Vector3.zero;
+            }
+        }
 
         private void OnDrawGizmosSelected()
         {
-            if (airRegion)
+            if (windRegion != null)
             {
-                if (_collider)
-                {
-                    Gizmos.color = airRegion.regionSidesColor;
-                    Gizmos.DrawCube(regionTransform.position, _collider.size);
-                    Gizmos.color = airRegion.regionBorderColor;
-                    Gizmos.DrawWireCube(regionTransform.position, _collider.size);
-                }
-                else
-                {
-                    _collider = GetComponent<BoxCollider>();
-                }
+                windRegion.DrawInGizmos();
             }
         }
     }
