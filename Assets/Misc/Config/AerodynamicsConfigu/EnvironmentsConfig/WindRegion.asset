@@ -16,11 +16,11 @@ MonoBehaviour:
   cellsX: 10
   cellsY: 10
   cellsZ: 10
-  force: 3
+  force: 50
   flowType: 0
   position: {x: 0, y: 115, z: 1100}
   offset: {x: -5, y: -5, z: -5}
-  direction: {x: 0.14868736, y: 0.33482528, z: -0.9304752}
+  direction: {x: 1, y: 0, z: 0}
   coordinates000: {x: -45, y: 70, z: 1055}
   topCoordinates000: {x: -50, y: 65, z: 1050}
   initialized: 1
