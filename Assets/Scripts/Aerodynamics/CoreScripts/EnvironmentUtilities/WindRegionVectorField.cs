@@ -33,7 +33,7 @@ namespace Aerodynamics.CoreScripts.EnvironmentUtilities
         public int cellsX = 5;
         public int cellsY = 5;
         public int cellsZ = 5;
-        public float force = 1f;
+        [Range(1.0f, 400.0f)] public float force = 1f;
         public WindFlowType flowType = WindFlowType.PerlinNoise;
 
         [Header("Initial Vector Field Position", order = 1)]
@@ -42,7 +42,7 @@ namespace Aerodynamics.CoreScripts.EnvironmentUtilities
         public Vector3 direction;
         public Vector3 coordinates000;
         public Vector3 topCoordinates000;
-        public Vector3[,,] vectors;
+        public Vector3[][][] vectors;
         public bool initialized = false;
         
         [Header("Custom Parameters", order = 1)]
@@ -143,7 +143,7 @@ namespace Aerodynamics.CoreScripts.EnvironmentUtilities
 
         private void InitializeVectorsDefault() 
         {
-            vectors = new Vector3[cellsX, cellsY, cellsZ];
+            vectors = new Vector3[cellsX][][];
 
             if (direction == Vector3.zero)
             {
@@ -152,11 +152,13 @@ namespace Aerodynamics.CoreScripts.EnvironmentUtilities
 
             for (int x = 0; x < cellsX; x++)
             {
+                vectors[x] = new Vector3[cellsY][];
                 for (int y = 0; y < cellsY; y++)
                 {
+                    vectors[x][y] = new Vector3[cellsZ];
                     for (int z = 0; z < cellsZ; z++)
                     {
-                        vectors[x, y, z] = direction;
+                        vectors[x][y][z] = direction;
                     }
                 }
             }
@@ -164,12 +166,14 @@ namespace Aerodynamics.CoreScripts.EnvironmentUtilities
         
         private void InitializeVectorsSpiral() 
         {
-            vectors = new Vector3[cellsX, cellsY, cellsZ];
+            vectors = new Vector3[cellsX][][];
 
             for (int x = 0; x < cellsX; x++)
             {
+                vectors[x] = new Vector3[cellsY][];
                 for (int y = 0; y < cellsY; y++)
                 {
+                    vectors[x][y] = new Vector3[cellsZ];
                     for (int z = 0; z < cellsZ; z++)
                     {
                         int xOff = x + offset.x;
@@ -177,7 +181,7 @@ namespace Aerodynamics.CoreScripts.EnvironmentUtilities
                         int zOff = z + offset.z;
                         
                         Vector3 noiseDirection = new Vector3(zOff - xOff, 0, -zOff - xOff);
-                        vectors[x, y, z] = noiseDirection.normalized;
+                        vectors[x][y][z] = noiseDirection.normalized;
                     }
                 }
             }
@@ -185,14 +189,16 @@ namespace Aerodynamics.CoreScripts.EnvironmentUtilities
 
         private void InitializeVectorsCustom() 
         {
-            vectors = new Vector3[cellsX, cellsY, cellsZ];
+            vectors = new Vector3[cellsX][][];
             
             if (functionType == FunctionType.PQR)
             {
                 for (int x = 0; x < cellsX; x++)
                 {
+                    vectors[x] = new Vector3[cellsY][];
                     for (int y = 0; y < cellsY; y++)
                     {
+                        vectors[x][y] = new Vector3[cellsZ];
                         for (int z = 0; z < cellsZ; z++)
                         {
                             int xOff = x + offset.x;
@@ -204,7 +210,7 @@ namespace Aerodynamics.CoreScripts.EnvironmentUtilities
                                 q.GetValue(xOff, yOff, zOff), 
                                 r.GetValue(xOff, yOff, zOff)
                                 );
-                            vectors[x, y, z] = noiseDirection.normalized;
+                            vectors[x][y][z] = noiseDirection.normalized;
                         }
                     }
                 }
@@ -215,8 +221,10 @@ namespace Aerodynamics.CoreScripts.EnvironmentUtilities
 
                 for (int x = 0; x < cellsX; x++)
                 {
+                    vectors[x] = new Vector3[cellsY][];
                     for (int y = 0; y < cellsY; y++)
                     {
+                        vectors[x][y] = new Vector3[cellsZ];
                         for (int z = 0; z < cellsZ; z++)
                         {
                             int xOff = x + offset.x;
@@ -224,7 +232,7 @@ namespace Aerodynamics.CoreScripts.EnvironmentUtilities
                             int zOff = z + offset.z;
                             
                             Vector3 noiseDirection = func(xOff, yOff, zOff);
-                            vectors[x, y, z] = noiseDirection.normalized;
+                            vectors[x][y][z] = noiseDirection.normalized;
                         }
                     }
                 }
@@ -233,12 +241,14 @@ namespace Aerodynamics.CoreScripts.EnvironmentUtilities
         
         private void InitializeVectorsPerlin() 
         {
-            vectors = new Vector3[cellsX, cellsY, cellsZ];
+            vectors = new Vector3[cellsX][][];
 
             for (int x = 0; x < cellsX; x++)
             {
+                vectors[x] = new Vector3[cellsY][];
                 for (int y = 0; y < cellsY; y++)
                 {
+                    vectors[x][y] = new Vector3[cellsZ];
                     for (int z = 0; z < cellsZ; z++)
                     {
                         int xOff = x + offset.x;
@@ -248,7 +258,7 @@ namespace Aerodynamics.CoreScripts.EnvironmentUtilities
                         float noisePI = noise * Mathf.PI;
                         Vector3 noiseDirection = new Vector3(Mathf.Cos(noisePI), Mathf.Sin(noisePI), Mathf.Cos(noisePI));
                         
-                        vectors[x, y, z] = noiseDirection.normalized;
+                        vectors[x][y][z] = noiseDirection.normalized;
                     }
                 }
             }
@@ -292,7 +302,7 @@ namespace Aerodynamics.CoreScripts.EnvironmentUtilities
                 return Vector3.zero;
             } 
             
-            return vectors[vectorIndex.x, vectorIndex.y, vectorIndex.z];
+            return vectors[vectorIndex.x][vectorIndex.y][vectorIndex.z];
         }
 
         public Vector3 GetWindVector(Vector3 worldCoordinates)
@@ -352,7 +362,7 @@ namespace Aerodynamics.CoreScripts.EnvironmentUtilities
                                 );
 
                             Handles.ArrowHandleCap(0, vectorCoordinates, 
-                                Quaternion.LookRotation(vectors[x, y, z]), cellSize / 2f, EventType.Repaint
+                                Quaternion.LookRotation(vectors[x][y][z]), cellSize / 2f, EventType.Repaint
                                 );
                         }
                     }

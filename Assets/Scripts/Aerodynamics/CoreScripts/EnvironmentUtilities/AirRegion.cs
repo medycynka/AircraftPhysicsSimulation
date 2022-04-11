@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 
 namespace Aerodynamics.CoreScripts.EnvironmentUtilities
@@ -18,9 +19,25 @@ namespace Aerodynamics.CoreScripts.EnvironmentUtilities
         public Color regionBorderColor = new Color(1f, 1f, 1f, 1f);
         public Color regionSidesColor = new Color(0f, 1f, 1f, 0.5f);
 
+        [Header("Calculated air density", order = 1)] 
+        [SerializeField] private float _calculatedDensity = Single.NaN;
+        private bool _isDensitySet;
+
+        private void OnValidate()
+        {
+            _calculatedDensity = AirUtility.CalculateAirDensity(temperature, humility, altitude, pressureAtSeaLevel, seaLevel);
+            _isDensitySet = true;
+        }
+
         public float CalculateAirDensity()
         {
-            return AirUtility.CalculateAirDensity(temperature, humility, altitude, pressureAtSeaLevel, seaLevel);
+            if (!_isDensitySet)
+            {
+                _calculatedDensity = AirUtility.CalculateAirDensity(temperature, humility, altitude, pressureAtSeaLevel, seaLevel);
+                _isDensitySet = true;
+            }
+
+            return _calculatedDensity;
         }
     }
 }
