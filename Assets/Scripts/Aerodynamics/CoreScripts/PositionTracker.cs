@@ -10,12 +10,20 @@ using Object = UnityEngine.Object;
 
 namespace Aerodynamics.CoreScripts
 {
+    [Serializable]
+    public class MeasurementFileConfig
+    {
+        public Object file;
+        public bool shouldMeasure;
+        [HideInInspector] public StreamWriter writer;
+    }
+    
     public class PositionTracker : MonoBehaviour
     {
         [Header("Measurement tracker", order = 0)]
         [Header("Frequency parameters", order = 1)]
-        [Range(2, 300)] public int frameRateStep = 60;
-        [Range(2, 16386)] public int maxMeasurementCount = 4096;   // 16386 ~ 4.5h with measurement taken every 60 (~1s)
+        [Range(2, 300)] public int frameRateStep = 30;
+        [Range(2, 16386)] public int maxMeasurementCount = 4096;   // 16386 ~ 4.5h with measurement taken every 60 frames (~1s)
         [Header("Object properties", order = 1)]
         public Transform objectTransform;
         public PhysicsManager physicsManager;
@@ -26,17 +34,11 @@ namespace Aerodynamics.CoreScripts
         public LineChart positionZChart;
         public LineChart rotationChart;
         [Header("Files storages", order = 1)] 
-        public Object tempChartFile;
-        public Object positionYChartFile;
-        public Object positionXChartFile;
-        public Object positionZChartFile;
-        public Object rotationChartFile;
-
-        private StreamWriter _tempChartFileWriter;
-        private StreamWriter _positionYChartFileWriter;
-        private StreamWriter _positionXChartFileWriter;
-        private StreamWriter _positionZChartFileWriter;
-        private StreamWriter _rotationChartFileWriter;
+        public MeasurementFileConfig tempChartFile;
+        public MeasurementFileConfig velChartFile;
+        public MeasurementFileConfig positionFile;
+        public MeasurementFileConfig rotationFile;
+        public MeasurementFileConfig forwardFile;
         
 
         private int counter = 0;
@@ -49,20 +51,50 @@ namespace Aerodynamics.CoreScripts
             positionZChart.series.ClearData();
             rotationChart.series.ClearData();
 
-            _tempChartFileWriter = new StreamWriter(AssetDatabase.GetAssetPath(tempChartFile), false);
-            _positionYChartFileWriter = new StreamWriter(AssetDatabase.GetAssetPath(positionYChartFile), false);
-            _positionXChartFileWriter = new StreamWriter(AssetDatabase.GetAssetPath(positionXChartFile), false);
-            _positionZChartFileWriter = new StreamWriter(AssetDatabase.GetAssetPath(positionZChartFile), false);
-            _rotationChartFileWriter = new StreamWriter(AssetDatabase.GetAssetPath(rotationChartFile), false);
+            if (tempChartFile.shouldMeasure)
+            {
+                tempChartFile.writer = new StreamWriter(AssetDatabase.GetAssetPath(tempChartFile.file), false);
+            }
+            if (velChartFile.shouldMeasure)
+            {
+                velChartFile.writer = new StreamWriter(AssetDatabase.GetAssetPath(velChartFile.file), false);
+            }
+            if (positionFile.shouldMeasure)
+            {
+                positionFile.writer = new StreamWriter(AssetDatabase.GetAssetPath(positionFile.file), false);
+            }
+            if (rotationFile.shouldMeasure)
+            {
+                rotationFile.writer = new StreamWriter(AssetDatabase.GetAssetPath(rotationFile.file), false);
+            }
+            if (forwardFile.shouldMeasure)
+            {
+                forwardFile.writer = new StreamWriter(AssetDatabase.GetAssetPath(forwardFile.file), false);
+            }
         }
 
         private void OnApplicationQuit()
         {
-            _tempChartFileWriter.Close();
-            _positionYChartFileWriter.Close();
-            _positionXChartFileWriter.Close();
-            _positionZChartFileWriter.Close();
-            _rotationChartFileWriter.Close();
+            if (tempChartFile.shouldMeasure)
+            {
+                tempChartFile.writer.Close();
+            }
+            if (velChartFile.shouldMeasure)
+            {
+                velChartFile.writer.Close();
+            }
+            if (positionFile.shouldMeasure)
+            {
+                positionFile.writer.Close();
+            }
+            if (rotationFile.shouldMeasure)
+            {
+                rotationFile.writer.Close();
+            }
+            if (forwardFile.shouldMeasure)
+            {
+                forwardFile.writer.Close();
+            }
         }
 
         public void MeasurePosition()
@@ -72,6 +104,7 @@ namespace Aerodynamics.CoreScripts
                 Vector3 currPos = objectTransform.position;
                 Vector3 currRot = MapRotation(objectTransform.rotation.eulerAngles);
                 float currVel = physicsManager.rb.velocity.magnitude * 2;
+                float timeCounter = counter * (frameRateStep / 60.0f);
                 
                 tempChart.AddData(0, counter, physicsManager.currentTemperature);
                 positionYChart.AddData(0, counter, currPos.y);
@@ -82,11 +115,28 @@ namespace Aerodynamics.CoreScripts
                 rotationChart.AddData(1, counter, currRot.y);
                 rotationChart.AddData(2, counter, currRot.z);
                 
-                _tempChartFileWriter.WriteLine($"{counter} {physicsManager.currentTemperature:F8}");
-                _positionYChartFileWriter.WriteLine($"{counter} {currPos.y:F8} {currVel:F8}");
-                _positionXChartFileWriter.WriteLine($"{counter} {currPos.x:F8}");
-                _positionZChartFileWriter.WriteLine($"{counter} {currPos.z:F8}");
-                _rotationChartFileWriter.WriteLine($"{counter} {currRot.x:F8} {currRot.y:F8} {currRot.z:F8}");
+                if (tempChartFile.shouldMeasure)
+                {
+                    tempChartFile.writer.WriteLine($"{timeCounter:F1} {physicsManager.currentTemperature:F8}");
+                }
+                if (velChartFile.shouldMeasure)
+                {
+                    velChartFile.writer.WriteLine($"{timeCounter:F1} {currVel:F8}");
+                }
+                if (positionFile.shouldMeasure)
+                {
+                    positionFile.writer.WriteLine($"{timeCounter:F1} {currPos.x:F8} {currPos.y:F8} {currPos.z:F8}");
+                }
+                if (rotationFile.shouldMeasure)
+                {
+                    rotationFile.writer.WriteLine($"{timeCounter:F1} {currRot.x:F8} {currRot.y:F8} {currRot.z:F8}");
+                }
+                if (forwardFile.shouldMeasure)
+                {
+                    Vector3 currForward = objectTransform.forward;
+                    
+                    forwardFile.writer.WriteLine($"{currPos.x:F6} {currPos.y:F6} {currPos.z:F6} {currForward.x:F6} {currForward.y:F6} {currForward.z:F6}");
+                }
                 
                 counter++;
             }

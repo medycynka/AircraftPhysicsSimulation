@@ -267,7 +267,7 @@ namespace Aerodynamics.CoreScripts
         private void UpdateVisibleTextValue()
         {
             displayText.text = "Velocity: " + ((int) _rb.velocity.magnitude * 2).ToString("D3") + " m/s\n" +
-                               "Height: " + ((int) transform.position.y).ToString("D4") + " m\n" +
+                               "Height: " + ((int) transform.position.y * 4).ToString("D4") + " m\n" +
                                "Trust: " + (int) (_thrustPercent * 100) + "%\n" +
                                (_brakesTorque > 0 ? "Breaks: ON" : "Breaks: OFF");
         }

@@ -852,12 +852,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d44edb6311aa49749ebf66cbf7103a65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  frameRateStep: 60
-  maxMeasurementCount: 100
+  frameRateStep: 30
+  maxMeasurementCount: 4096
   objectTransform: {fileID: 2586133614152267353}
   physicsManager: {fileID: 2586133614152267359}
   tempChart: {fileID: 0}
-  positionChart: {fileID: 0}
+  positionYChart: {fileID: 0}
+  positionXChart: {fileID: 0}
+  positionZChart: {fileID: 0}
+  rotationChart: {fileID: 0}
+  tempChartFile:
+    file: {fileID: 4900000, guid: a5cea5dae4b99134bbf552e00f63089b, type: 3}
+    shouldMeasure: 0
+  velChartFile:
+    file: {fileID: 4900000, guid: 19fd8db0d2f166f449958f584f919476, type: 3}
+    shouldMeasure: 0
+  positionFile:
+    file: {fileID: 4900000, guid: 110497b7ee47ba44dbb5b2cc73cb1e89, type: 3}
+    shouldMeasure: 1
+  rotationChartFile:
+    file: {fileID: 4900000, guid: 00803c549934f4e4bbd6e9be8a18e1d8, type: 3}
+    shouldMeasure: 1
 --- !u!1 &2586133614182212724
 GameObject:
   m_ObjectHideFlags: 0

@@ -16,13 +16,13 @@ MonoBehaviour:
   cellsX: 16
   cellsY: 16
   cellsZ: 16
-  force: 50
+  force: 12.5
   flowType: 2
-  position: {x: 0, y: 115, z: 1100}
+  position: {x: 0, y: 115, z: 1220}
   offset: {x: -8, y: -8, z: -8}
   direction: {x: 1, y: 0, z: 0}
-  coordinates000: {x: -75, y: 40, z: 1025}
-  topCoordinates000: {x: -80, y: 35, z: 1020}
+  coordinates000: {x: -75, y: 40, z: 1145}
+  topCoordinates000: {x: -80, y: 35, z: 1140}
   initialized: 1
   functionType: 4
   a: 1
@@ -42,3 +42,4 @@ MonoBehaviour:
   regionSegmentColor: {r: 0.6554132, g: 0.6886792, b: 0, a: 1}
   topSegmentColor1: {r: 1, g: 0, b: 0, a: 1}
   topSegmentColor2: {r: 1, g: 0.5424528, b: 0.5424528, a: 1}
+  windDataFile: {fileID: 4900000, guid: ba3e423e4688ab64a981548f58a0af3f, type: 3}

@@ -1,6 +1,8 @@
 ﻿using System;
+using System.IO;
 using UnityEditor;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 
 namespace Aerodynamics.CoreScripts.EnvironmentUtilities
@@ -33,7 +35,7 @@ namespace Aerodynamics.CoreScripts.EnvironmentUtilities
         public int cellsX = 5;
         public int cellsY = 5;
         public int cellsZ = 5;
-        [Range(1.0f, 400.0f)] public float force = 1f;
+        [Range(0.1f, 400.0f)] public float force = 1f;
         public WindFlowType flowType = WindFlowType.PerlinNoise;
 
         [Header("Initial Vector Field Position", order = 1)]
@@ -68,6 +70,9 @@ namespace Aerodynamics.CoreScripts.EnvironmentUtilities
         public Color regionSegmentColor = new Color(1f, 1f, 0f, 1f);
         public Color topSegmentColor1 = new Color(1f, 0f, 0f, 1f);
         public Color topSegmentColor2 = new Color(1f, 1f, 1f, 1f);
+        
+        [Header("Vector field data file", order = 1)]
+        public Object windDataFile;
 
         private void OnValidate()
         {
@@ -105,6 +110,33 @@ namespace Aerodynamics.CoreScripts.EnvironmentUtilities
             }
         }
 
+        public void SaveVectorFieldToFile()
+        {
+            if (windDataFile != null)
+            {
+                StreamWriter writer = new StreamWriter(AssetDatabase.GetAssetPath(windDataFile), false);
+                
+                for (int x = 0; x < cellsX; x++)
+                {
+                    for (int y = 0; y < cellsY; y++)
+                    {
+                        for (int z = 0; z < cellsZ; z++)
+                        {
+                            Vector3 vectorCoordinates = new Vector3(
+                                2 * (offset.x + x),
+                                2 * (offset.y + y),
+                                2 * (offset.z + z)
+                            );
+
+                            writer.WriteLine($"{vectorCoordinates.x:F6} {vectorCoordinates.y:F6} {vectorCoordinates.z:F6} {vectors[x][y][z].x:F6} {vectors[x][y][z].y:F6} {vectors[x][y][z].z:F6}");
+                        }
+                    }
+                }
+                
+                writer.Close();
+            }
+        }
+
         private void InitializeVectors()
         {
             switch (flowType)
@@ -124,6 +156,8 @@ namespace Aerodynamics.CoreScripts.EnvironmentUtilities
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+
+            SaveVectorFieldToFile();
         }
 
         private Func<int, int, int, Vector3> GetFunction(FunctionType expression)
@@ -307,7 +341,7 @@ namespace Aerodynamics.CoreScripts.EnvironmentUtilities
 
         public Vector3 GetWindVector(Vector3 worldCoordinates)
         {
-            return VectorValueInWorldCoordinates(worldCoordinates) * force;
+            return VectorValueInWorldCoordinates(worldCoordinates) * 2.0f * force;
         }
 
         public void DrawInGizmos()
