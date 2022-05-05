@@ -51,8 +51,14 @@ namespace Aerodynamics.CoreScripts.EnvironmentUtilities
                         _physicsManager = other.GetComponentInChildren<PhysicsManager>();
                     }
                 }
+
+                Vector3 currentPlanePos = other.transform.position;
                 
-                _physicsManager.windVector = windRegion.GetWindVector(other.transform.position);
+                _physicsManager.windVector = windRegion.GetWindVector(currentPlanePos);
+                for (int i = 0; i < _physicsManager.aerodynamicSurfacePositions.Count; i++)
+                {
+                    _physicsManager.aerodynamicSurfaceWindVectors[i] = windRegion.GetWindVector(currentPlanePos + _physicsManager.aerodynamicSurfacePositions[i]);
+                }
             }
         }
         
@@ -60,7 +66,13 @@ namespace Aerodynamics.CoreScripts.EnvironmentUtilities
         {
             if (other.CompareTag(_airPlaneTag) && _physicsManager != null)
             {
-                _physicsManager.windVector = windRegion.GetWindVector(other.transform.position);
+                Vector3 currentPlanePos = other.transform.position;
+                
+                _physicsManager.windVector = windRegion.GetWindVector(currentPlanePos);
+                for (int i = 0; i < _physicsManager.aerodynamicSurfacePositions.Count; i++)
+                {
+                    _physicsManager.aerodynamicSurfaceWindVectors[i] = windRegion.GetWindVector(currentPlanePos + _physicsManager.aerodynamicSurfacePositions[i]);
+                }
             }
         }
 
@@ -69,6 +81,10 @@ namespace Aerodynamics.CoreScripts.EnvironmentUtilities
             if (other.CompareTag(_airPlaneTag))
             {
                 _physicsManager.windVector = Vector3.zero;
+                for (int i = 0; i < _physicsManager.aerodynamicSurfacePositions.Count; i++)
+                {
+                    _physicsManager.aerodynamicSurfaceWindVectors[i] = Vector3.zero;
+                }
             }
         }
 

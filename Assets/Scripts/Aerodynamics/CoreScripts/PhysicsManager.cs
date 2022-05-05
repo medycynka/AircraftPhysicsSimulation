@@ -13,6 +13,8 @@ namespace Aerodynamics.CoreScripts
         public float currentTemperature = 20f;
         public Vector3 windVector = Vector3.zero;
         public List<AerodynamicSurfaceManager> aerodynamicSurfaces;
+        public List<Vector3> aerodynamicSurfacePositions;
+        public List<Vector3> aerodynamicSurfaceWindVectors;
 
         public Rigidbody rb => _rb;
         
@@ -29,14 +31,27 @@ namespace Aerodynamics.CoreScripts
             _thrust = thrust * 1000f;
             _airplaneTransform = transform;
 
-            /*for (int i = 0; i < 120; i++)
+            aerodynamicSurfacePositions ??= new List<Vector3>();
+            if (aerodynamicSurfacePositions.Count != aerodynamicSurfaces.Count)
             {
-                AirRegion newSo = ScriptableObject.CreateInstance<AirRegion>();
-                newSo.name = $"AirRegion_{i * 100}-{(i + 1) * 100}";
-                newSo.altitude = i * 100;
-                newSo.temperature = 20.0f - i * 0.6f;
-                AssetDatabase.CreateAsset(newSo, $"Assets/Misc/Config/AerodynamicsConfigu/EnvironmentsConfig/DefaultsAirRegions/{newSo.name}.asset");
-            }*/
+                aerodynamicSurfacePositions.Clear();
+                
+                for (var i = 0; i < aerodynamicSurfaces.Count; i++)
+                {
+                    aerodynamicSurfacePositions.Add(aerodynamicSurfaces[i].transform.localPosition);
+                }
+            }
+            
+            aerodynamicSurfaceWindVectors ??= new List<Vector3>();
+            if (aerodynamicSurfaceWindVectors.Count != aerodynamicSurfaces.Count)
+            {
+                aerodynamicSurfaceWindVectors.Clear();
+                
+                for (var i = 0; i < aerodynamicSurfaces.Count; i++)
+                {
+                    aerodynamicSurfaceWindVectors.Add(windVector);
+                }
+            }
         }
 
         private void HandleCalculations(float delta)
@@ -76,7 +91,7 @@ namespace Aerodynamics.CoreScripts
             {
                 Vector3 relativePosition = aerodynamicSurfaces[i].transform.position - centerOfMass;
                 forceAndTorque += aerodynamicSurfaces[i].CalculateForces(
-                    -velocity + wind - Vector3.Cross(angularVelocity, relativePosition),
+                    -velocity + aerodynamicSurfaceWindVectors[i] - Vector3.Cross(angularVelocity, relativePosition),
                     currentAirDensity, relativePosition);
             }
 

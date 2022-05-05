@@ -801,6 +801,26 @@ MonoBehaviour:
   - {fileID: 2586133613803696814}
   - {fileID: 2586133612271360100}
   - {fileID: 2586133612201217031}
+  aerodynamicSurfacePositions:
+  - {x: -1.56, y: 2.057, z: 0.86}
+  - {x: 1.56, y: 2.057, z: 0.86}
+  - {x: -4, y: 2.057, z: 0.83}
+  - {x: 4, y: 2.057, z: 0.83}
+  - {x: -0.95, y: 1.51, z: -3.61}
+  - {x: 0.95, y: 1.51, z: -3.61}
+  - {x: 0, y: 2.402, z: -4.042}
+  - {x: 0, y: 1.64, z: -2.01}
+  - {x: 0, y: 1.3, z: 1.09}
+  aerodynamicSurfaceWindVectors:
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
 --- !u!114 &2586133614152267356
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -870,9 +890,12 @@ MonoBehaviour:
   positionFile:
     file: {fileID: 4900000, guid: 110497b7ee47ba44dbb5b2cc73cb1e89, type: 3}
     shouldMeasure: 1
-  rotationChartFile:
-    file: {fileID: 4900000, guid: 00803c549934f4e4bbd6e9be8a18e1d8, type: 3}
-    shouldMeasure: 1
+  rotationFile:
+    file: {fileID: 0}
+    shouldMeasure: 0
+  forwardFile:
+    file: {fileID: 0}
+    shouldMeasure: 0
 --- !u!1 &2586133614182212724
 GameObject:
   m_ObjectHideFlags: 0
