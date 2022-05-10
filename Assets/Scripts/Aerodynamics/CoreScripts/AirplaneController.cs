@@ -13,9 +13,9 @@ namespace Aerodynamics.CoreScripts
     {
         public List<AerodynamicSurfaceManager> controlSurfaces;
         public List<WheelCollider> wheels;
-        public List<DetachablePart> detachableParts;
-        public bool randomDetach;
-        public List<Transform> rotators;
+        [HideInInspector] public List<DetachablePart> detachableParts;
+        [HideInInspector] public bool randomDetach;
+        [HideInInspector] public List<Transform> rotators;
         [Range(500f, 25000f)] public float airplaneMass = 1000f;
         public float rollControlSensitivity = 0.2f;
         public float pitchControlSensitivity = 0.2f;
@@ -24,8 +24,8 @@ namespace Aerodynamics.CoreScripts
         [Range(-1, 1)] public float yawPower;
         [Range(-1, 1)] public float rollPower;
         [Range(0, 1)] public float flapPower;
-        [Range(0, 0.3f)] public float flapIncrementPower = 0.15f;
-        public int flapMaxIncrementAmount = 3;
+        [Range(0, 0.3f)] public float flapControlSensitivity = 0.15f;
+        public int flapMaxChangeAmount = 3;
         public TextMeshProUGUI displayText;
         public PositionTracker positionTracker;
 
@@ -143,9 +143,9 @@ namespace Aerodynamics.CoreScripts
         {
             if (Input.GetKeyDown(KeyCode.F))
             {
-                if (_incCount < flapMaxIncrementAmount)
+                if (_incCount < flapMaxChangeAmount)
                 {
-                    flapPower += flapIncrementPower;
+                    flapPower += flapControlSensitivity;
 
                     if (_decCount > 0)
                     {
@@ -160,9 +160,9 @@ namespace Aerodynamics.CoreScripts
 
             if (Input.GetKeyDown(KeyCode.G))
             {
-                if (_decCount < flapMaxIncrementAmount)
+                if (_decCount < flapMaxChangeAmount)
                 {
-                    flapPower -= flapIncrementPower;
+                    flapPower -= flapControlSensitivity;
 
                     if (_incCount > 0)
                     {
