@@ -18,11 +18,11 @@ MonoBehaviour:
   cellsZ: 16
   force: 12.5
   flowType: 2
-  position: {x: 0, y: 115, z: 1220}
+  position: {x: 0, y: 115, z: 1100}
   offset: {x: -8, y: -8, z: -8}
   direction: {x: 1, y: 0, z: 0}
-  coordinates000: {x: -75, y: 40, z: 1145}
-  topCoordinates000: {x: -80, y: 35, z: 1140}
+  coordinates000: {x: -75, y: 40, z: 1025}
+  topCoordinates000: {x: -80, y: 35, z: 1020}
   initialized: 1
   functionType: 4
   a: 1

@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using Aerodynamics.CoreScripts.EnvironmentUtilities;
-using UnityEditor;
 using UnityEngine;
 
 
@@ -8,7 +6,7 @@ namespace Aerodynamics.CoreScripts
 {
     public class PhysicsManager : MonoBehaviour
     {
-        [Range(1, 250)] public float thrust = 5;
+        [Range(1, 250)] public float accelerateMultiplier = 5;
         [Range(0, 5)] public float airDensity = 1.2f;
         public float currentTemperature = 20f;
         public Vector3 windVector = Vector3.zero;
@@ -28,7 +26,7 @@ namespace Aerodynamics.CoreScripts
         private void Awake()
         {
             _rb = GetComponent<Rigidbody>();
-            _thrust = thrust * 1000f;
+            _thrust = accelerateMultiplier * 1000f;
             _airplaneTransform = transform;
 
             aerodynamicSurfacePositions ??= new List<Vector3>();

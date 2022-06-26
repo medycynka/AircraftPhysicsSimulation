@@ -10,7 +10,7 @@ namespace Aerodynamics.CoreScripts.EnvironmentUtilities
         [Header("Air Region", order = 0)] 
         [Header("Region air properties", order = 1)]
         [Tooltip("Region temperature in Celsius degrees.")] [Range(-50f, 80f)] public float temperature;
-        [Tooltip("Region humility. 0 means dry air and 1 is air with 100% humility.")] [Range(0f, 1f)] public float humility;
+        [Tooltip("Region humidity. 0 means dry air and 1 is air with 100% humidity.")] [Range(0f, 1f)] public float humidity;
         [Tooltip("Region altitude in meters from region's sea level.")] public float altitude;
         [Tooltip("Region air pressure in Pascals.")] public float pressureAtSeaLevel = 100000;
         [Tooltip("Region sea level.")] public float seaLevel;
@@ -25,7 +25,7 @@ namespace Aerodynamics.CoreScripts.EnvironmentUtilities
 
         private void OnValidate()
         {
-            _calculatedDensity = AirUtility.CalculateAirDensity(temperature, humility, altitude, pressureAtSeaLevel, seaLevel);
+            _calculatedDensity = AirUtility.CalculateAirDensity(temperature, humidity, altitude, pressureAtSeaLevel, seaLevel);
             _isDensitySet = true;
         }
 
@@ -33,7 +33,7 @@ namespace Aerodynamics.CoreScripts.EnvironmentUtilities
         {
             if (!_isDensitySet)
             {
-                _calculatedDensity = AirUtility.CalculateAirDensity(temperature, humility, altitude, pressureAtSeaLevel, seaLevel);
+                _calculatedDensity = AirUtility.CalculateAirDensity(temperature, humidity, altitude, pressureAtSeaLevel, seaLevel);
                 _isDensitySet = true;
             }
 

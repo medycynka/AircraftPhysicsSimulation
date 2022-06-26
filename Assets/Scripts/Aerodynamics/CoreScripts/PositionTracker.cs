@@ -34,8 +34,8 @@ namespace Aerodynamics.CoreScripts
         public LineChart positionZChart;
         public LineChart rotationChart;
         [Header("Files storages", order = 1)] 
-        public MeasurementFileConfig tempChartFile;
-        public MeasurementFileConfig velChartFile;
+        public MeasurementFileConfig tempFile;
+        public MeasurementFileConfig velFile;
         public MeasurementFileConfig positionFile;
         public MeasurementFileConfig rotationFile;
         public MeasurementFileConfig forwardFile;
@@ -51,37 +51,72 @@ namespace Aerodynamics.CoreScripts
             positionZChart.series.ClearData();
             rotationChart.series.ClearData();
 
-            if (tempChartFile.shouldMeasure)
+            if (tempFile.shouldMeasure)
             {
-                tempChartFile.writer = new StreamWriter(AssetDatabase.GetAssetPath(tempChartFile.file), false);
+                if (tempFile.file != null)
+                {
+                    tempFile.writer = new StreamWriter(AssetDatabase.GetAssetPath(tempFile.file), false);
+                }
+                else
+                {
+                    tempFile.shouldMeasure = false;
+                }
             }
-            if (velChartFile.shouldMeasure)
+            if (velFile.shouldMeasure)
             {
-                velChartFile.writer = new StreamWriter(AssetDatabase.GetAssetPath(velChartFile.file), false);
+                if (velFile.file != null)
+                {
+                    velFile.writer = new StreamWriter(AssetDatabase.GetAssetPath(velFile.file), false);
+                }
+                else
+                {
+                    velFile.shouldMeasure = false;
+                }
             }
             if (positionFile.shouldMeasure)
             {
-                positionFile.writer = new StreamWriter(AssetDatabase.GetAssetPath(positionFile.file), false);
+                if (positionFile.file != null)
+                {
+                    positionFile.writer = new StreamWriter(AssetDatabase.GetAssetPath(positionFile.file), false);
+                }
+                else
+                {
+                    positionFile.shouldMeasure = false;
+                }
             }
             if (rotationFile.shouldMeasure)
             {
-                rotationFile.writer = new StreamWriter(AssetDatabase.GetAssetPath(rotationFile.file), false);
+                if (rotationFile.file != null)
+                {
+                    rotationFile.writer = new StreamWriter(AssetDatabase.GetAssetPath(rotationFile.file), false);
+                }
+                else
+                {
+                    rotationFile.shouldMeasure = false;
+                }
             }
             if (forwardFile.shouldMeasure)
             {
-                forwardFile.writer = new StreamWriter(AssetDatabase.GetAssetPath(forwardFile.file), false);
+                if (forwardFile.file != null)
+                {
+                    forwardFile.writer = new StreamWriter(AssetDatabase.GetAssetPath(forwardFile.file), false);
+                }
+                else
+                {
+                    forwardFile.shouldMeasure = false;
+                }
             }
         }
 
         private void OnApplicationQuit()
         {
-            if (tempChartFile.shouldMeasure)
+            if (tempFile.shouldMeasure)
             {
-                tempChartFile.writer.Close();
+                tempFile.writer.Close();
             }
-            if (velChartFile.shouldMeasure)
+            if (velFile.shouldMeasure)
             {
-                velChartFile.writer.Close();
+                velFile.writer.Close();
             }
             if (positionFile.shouldMeasure)
             {
@@ -115,13 +150,13 @@ namespace Aerodynamics.CoreScripts
                 rotationChart.AddData(1, counter, currRot.y);
                 rotationChart.AddData(2, counter, currRot.z);
                 
-                if (tempChartFile.shouldMeasure)
+                if (tempFile.shouldMeasure)
                 {
-                    tempChartFile.writer.WriteLine($"{timeCounter:F1} {physicsManager.currentTemperature:F8}");
+                    tempFile.writer.WriteLine($"{timeCounter:F1} {physicsManager.currentTemperature:F8}");
                 }
-                if (velChartFile.shouldMeasure)
+                if (velFile.shouldMeasure)
                 {
-                    velChartFile.writer.WriteLine($"{timeCounter:F1} {currVel:F8}");
+                    velFile.writer.WriteLine($"{timeCounter:F1} {currVel:F8}");
                 }
                 if (positionFile.shouldMeasure)
                 {
