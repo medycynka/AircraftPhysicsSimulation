@@ -28,6 +28,8 @@ namespace Aerodynamics.CoreScripts
         public int flapMaxChangeAmount = 3;
         public TextMeshProUGUI displayText;
         public PositionTracker positionTracker;
+        [Range(-1.0f, 10.0f)] public float autoStart = 5.0f;
+        [Range(0.0f, 30.0f)] public float maxAutoFlight = 25.0f;
 
         private float _thrustPercent;
         private float _brakesTorque;
@@ -42,6 +44,8 @@ namespace Aerodynamics.CoreScripts
         private int _closeWheelsId;
         private bool _thrustChanged;
         private bool _breakChanged;
+        private bool _autoStart = false;
+        private bool _autoStarted = false;
 
         public float mass => _currentMass;
 
@@ -68,6 +72,11 @@ namespace Aerodynamics.CoreScripts
 
             airplaneMass = _currentMass;
             _rb.mass = _currentMass;
+
+            if (autoStart > 0.0f)
+            {
+                _autoStart = true;
+            }
         }
 
         private void Update()
@@ -83,14 +92,36 @@ namespace Aerodynamics.CoreScripts
 
             UpdateVisibleTextValue();
 
-            if (positionTracker != null)
-            {
-                positionTracker.MeasurePosition();
-            }
+            // if (positionTracker != null)
+            // {
+            //     positionTracker.MeasurePosition();
+            // }
         }
 
         private void FixedUpdate()
         {
+            float timeDelta = Time.fixedDeltaTime;
+            
+            if (!_thrustChanged && _autoStart && autoStart > 0.0f)
+            {
+                autoStart -= timeDelta;
+            }
+
+            if (_autoStarted)
+            {
+                if (maxAutoFlight > 0.0f)
+                {
+                    maxAutoFlight -= timeDelta;
+                }
+                else
+                {
+#if UNITY_EDITOR
+                    UnityEditor.EditorApplication.isPlaying = false;
+#endif
+                    Application.Quit();
+                }
+            }
+            
             SetControlSurfecesAngles(pitchPower, rollPower, yawPower, flapPower);
 
             if (_thrustChanged)
@@ -99,7 +130,7 @@ namespace Aerodynamics.CoreScripts
                 _thrustChanged = false;
             }
 
-            _physicsManager.HandleFixedUpdate(Time.fixedDeltaTime);
+            _physicsManager.HandleFixedUpdate(timeDelta);
 
             if (Time.frameCount % 10 == 0 || _breakChanged)
             {
@@ -126,6 +157,13 @@ namespace Aerodynamics.CoreScripts
 
         private void HandleTrustAndBreaks()
         {
+            if (!_thrustChanged && _autoStart && autoStart <= 0.0f && !_autoStarted)
+            {
+                _thrustChanged = true;
+                _thrustPercent = _thrustPercent > 0 ? 0 : 1f;
+                _autoStarted = true;
+            }
+            
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 _thrustChanged = true;

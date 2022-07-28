@@ -23,6 +23,7 @@ namespace Aerodynamics.CoreScripts
         [Header("Measurement tracker", order = 0)]
         [Header("Frequency parameters", order = 1)]
         [Range(2, 300)] public int frameRateStep = 30;
+        [Range(0.1f, 5.0f)] public float timeRateStep = 0.5f;
         [Range(2, 16386)] public int maxMeasurementCount = 4096;   // 16386 ~ 4.5h with measurement taken every 60 frames (~1s)
         [Header("Object properties", order = 1)]
         public Transform objectTransform;
@@ -106,6 +107,8 @@ namespace Aerodynamics.CoreScripts
                     forwardFile.shouldMeasure = false;
                 }
             }
+            
+            InvokeRepeating(nameof(MeasurePositionByTime), 0.0f, timeRateStep);
         }
 
         private void OnApplicationQuit()
@@ -140,6 +143,51 @@ namespace Aerodynamics.CoreScripts
                 Vector3 currRot = MapRotation(objectTransform.rotation.eulerAngles);
                 float currVel = physicsManager.rb.velocity.magnitude * 2;
                 float timeCounter = counter * (frameRateStep / 60.0f);
+                
+                tempChart.AddData(0, counter, physicsManager.currentTemperature);
+                positionYChart.AddData(0, counter, currPos.y);
+                positionYChart.AddData(1, counter, currVel);
+                positionXChart.AddData(0, counter, currPos.x);
+                positionZChart.AddData(0, counter, currPos.z);
+                rotationChart.AddData(0, counter, currRot.x);
+                rotationChart.AddData(1, counter, currRot.y);
+                rotationChart.AddData(2, counter, currRot.z);
+                
+                if (tempFile.shouldMeasure)
+                {
+                    tempFile.writer.WriteLine($"{timeCounter:F1} {physicsManager.currentTemperature:F8}");
+                }
+                if (velFile.shouldMeasure)
+                {
+                    velFile.writer.WriteLine($"{timeCounter:F1} {currVel:F8}");
+                }
+                if (positionFile.shouldMeasure)
+                {
+                    positionFile.writer.WriteLine($"{timeCounter:F1} {currPos.x:F8} {currPos.y:F8} {currPos.z:F8}");
+                }
+                if (rotationFile.shouldMeasure)
+                {
+                    rotationFile.writer.WriteLine($"{timeCounter:F1} {currRot.x:F8} {currRot.y:F8} {currRot.z:F8}");
+                }
+                if (forwardFile.shouldMeasure)
+                {
+                    Vector3 currForward = objectTransform.forward;
+                    
+                    forwardFile.writer.WriteLine($"{currPos.x:F6} {currPos.y:F6} {currPos.z:F6} {currForward.x:F6} {currForward.y:F6} {currForward.z:F6}");
+                }
+                
+                counter++;
+            }
+        }
+        
+        public void MeasurePositionByTime()
+        {
+            if (counter < maxMeasurementCount)
+            {
+                Vector3 currPos = objectTransform.position;
+                Vector3 currRot = MapRotation(objectTransform.rotation.eulerAngles);
+                float currVel = physicsManager.rb.velocity.magnitude * 2;
+                float timeCounter = counter * timeRateStep;
                 
                 tempChart.AddData(0, counter, physicsManager.currentTemperature);
                 positionYChart.AddData(0, counter, currPos.y);

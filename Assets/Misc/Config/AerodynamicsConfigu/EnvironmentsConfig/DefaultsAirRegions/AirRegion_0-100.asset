@@ -13,9 +13,10 @@ MonoBehaviour:
   m_Name: AirRegion_0-100
   m_EditorClassIdentifier: 
   temperature: 20
-  humility: 0.1
+  humidity: 0
   altitude: 0
   pressureAtSeaLevel: 100000
   seaLevel: 0
   regionBorderColor: {r: 0, g: 0, b: 1, a: 1}
   regionSidesColor: {r: 0, g: 1, b: 0.7891414, a: 0.12156863}
+  _calculatedDensity: 1.1883392
