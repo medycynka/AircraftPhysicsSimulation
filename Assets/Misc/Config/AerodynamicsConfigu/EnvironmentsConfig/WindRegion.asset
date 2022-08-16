@@ -12,17 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 113e0a5953a44f0bb1c77488a5e2388b, type: 3}
   m_Name: WindRegion
   m_EditorClassIdentifier: 
-  cellSize: 10
+  cellSize: 5
   cellsX: 16
   cellsY: 16
   cellsZ: 16
-  force: 12.5
+  force: 20
   flowType: 2
-  position: {x: 0, y: 115, z: 1100}
+  position: {x: 0, y: 200, z: 750}
   offset: {x: -8, y: -8, z: -8}
   direction: {x: 1, y: 0, z: 0}
-  coordinates000: {x: -75, y: 40, z: 1025}
-  topCoordinates000: {x: -80, y: 35, z: 1020}
+  coordinates000: {x: -37.5, y: 162.5, z: 712.5}
+  topCoordinates000: {x: -40, y: 160, z: 710}
   initialized: 1
   functionType: 4
   a: 1
@@ -37,9 +37,9 @@ MonoBehaviour:
   persistence: 1
   octave: 2
   drawSegments: 0
-  drawArrows: 1
+  drawArrows: 0
   regionArrowColor: {r: 0, g: 0.06058979, b: 1, a: 1}
   regionSegmentColor: {r: 0.6554132, g: 0.6886792, b: 0, a: 1}
   topSegmentColor1: {r: 1, g: 0, b: 0, a: 1}
   topSegmentColor2: {r: 1, g: 0.5424528, b: 0.5424528, a: 1}
-  windDataFile: {fileID: 4900000, guid: ba3e423e4688ab64a981548f58a0af3f, type: 3}
+  windDataFile: {fileID: 4900000, guid: 4ae5b585e3864e14916445edaac37844, type: 3}

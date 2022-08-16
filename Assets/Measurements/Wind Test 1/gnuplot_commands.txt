@@ -1,0 +1,32 @@
+splot "forward_w_1_0_0.txt" u 1:2:3:($4 + $1):($5 + $2):($6 + $3) with vectors lt 2 t "X:Y:Z",\
+"forward_w_1_0_0.txt" u 1:3:2:($4 + $1):($6 + $3):($5 + $2) with vectors lt 1 t "X:Z:Y",\
+"forward_w_1_0_0.txt" u 3:1:2:($6 + $3):($4 + $1):($5 + $2) with vectors lt 3 t "Z:X:Y"
+
+reset
+set xrange [10:24]
+set yrange [-20:30]
+set xlabel 'Czas [s]'
+set ylabel 'Kąt [stopnie]'
+plot 'rotation_w_1_0_0.txt' u 1:2 t 'pitch' smooth cspline, 'rotation_w_1_0_0.txt' u 1:3 t 'yaw' smooth cspline, 'rotation_w_1_0_0.txt' u 1:4 t 'roll' smooth cspline
+
+reset
+set xrange [10:24]
+set yrange [-25:10]
+set xlabel 'Czas [s]'
+set ylabel 'Kąt [stopnie]'
+plot 'rotation_w_1_0_0.txt' u 1:3 t 'yaw' smooth cspline, 'rotation_w_1_0_0.txt' u 1:4 t 'roll' smooth cspline
+
+reset
+set xrange [0:24]
+set yrange [-110:-10]
+set xlabel 'Czas [s]'
+set ylabel 'Pozycja na osi X [m]'
+plot 'position_w_1_0_0.txt' u 1:($2 * 4) t 'x' smooth cspline
+
+reset
+set key left top
+set xrange [0:25]
+set yrange [-400:950]
+set xlabel 'Czas [s]'
+set ylabel 'Pozycja [m]'
+plot 'position_w_1_0_0.txt' u 1:($2 * 4) t 'x' smooth cspline, 'position_w_1_0_0.txt' u 1:($3 * 4) t 'y' smooth cspline
